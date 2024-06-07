@@ -21,7 +21,9 @@ library(ggplot2)
 library(readr)
 library(stringr)
 library(here)
-library(rgeco)
+library(rgeco) # get it from here: https://github.com/geco-bern/rgeco
+library(khroma)
+library(cowplot)
 ```
 
 ## Approach
