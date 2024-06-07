@@ -110,11 +110,8 @@ filnams <- read_csv(here("data-raw/filnams_trendy_v7_S1.csv")) %>%
   setNames(c("modl", paste0("filn_", names(.)[-1])))
 
 modls <- filnams |> 
-  filter(!is.na(filn_cSoil) & !is.na(filn_cVeg) & !is.na(filn_npp)) |>
+  filter(!is.na(filn_gpp) & !is.na(filn_cVeg) & !is.na(filn_npp) & !is.na(filn_cRoot)) |>
 
-  ## for separate aboveground biomass
-  filter(!is.na(filn_cWood) & !is.na(filn_cLeaf)) |>
-  
   ## remove models from analysis. See above for reasons for exclusion
   filter(!(modl %in% c("LPJ", "DLEM", "LPX-Bern", "VISIT"))) |>
   
@@ -122,8 +119,8 @@ modls <- filnams |>
   
   pull(modl)
 
-# datadir <- "~/data/trendy/v7/"
-datadir <- "/data_1/trendy/v8"  # on GECO server
+datadir <- "~/data/trendy/v8/"  # on beni laptop
+# datadir <- "/data_1/trendy/v8"  # on GECO server
 
 df <- filnams |> 
   
@@ -137,76 +134,65 @@ df <- filnams |>
   
   ## get starting year
   left_join(read_csv(here("data-raw/startyear_trendy_v7_S1.csv")), by = "modl") |> 
-  rename(startyear_init = startyear, startyear_npp_init = startyear_npp) |> 
-  mutate(endyear_init = startyear_init + 9, endyear_npp_init = startyear_npp_init + 9) |> 
+  rename(
+    startyear_init = startyear, 
+    startyear_npp_init = startyear_npp,
+    startyear_gpp_init = startyear_gpp
+    ) |> 
+  mutate(
+    endyear_init = startyear_init + 9, 
+    endyear_npp_init = startyear_npp_init + 9,
+    endyear_gpp_init = startyear_gpp_init + 9
+    ) |> 
     
   ## create CDO command to convert flux (per seconds) to annual total (per year)
-  mutate(cmd_npp_units = paste(here("src/get_tot_ann.sh"), filn_npp, dir)) |> 
+  mutate(
+    cmd_npp_units = paste(here("src/get_tot_ann.sh"), filn_npp, dir),
+    cmd_gpp_units = paste(here("src/get_tot_ann.sh"), filn_gpp, dir)
+    ) |> 
   
   ## create CDO command to take mean across years at simulation start and end
-  mutate(cmd_cVeg    = paste(here("src/proc_trendy_soc_biomass.sh"), filn_cVeg,    dir, startyear_init,     endyear_init),
-         cmd_cSoil   = paste(here("src/proc_trendy_soc_biomass.sh"), filn_cSoil,   dir, startyear_init,     endyear_init),
-         cmd_npp     = paste(here("src/proc_trendy_soc_biomass.sh"), filn_npp_ANN, dir, startyear_npp_init, endyear_npp_init),
-         cmd_cLeaf   = paste(here("src/proc_trendy_soc_biomass.sh"), filn_cLeaf,   dir, startyear_init,     endyear_init),
-         cmd_cWood   = paste(here("src/proc_trendy_soc_biomass.sh"), filn_cWood,   dir, startyear_init,     endyear_init),
-         cmd_cRoot   = paste(here("src/proc_trendy_soc_biomass.sh"), filn_cRoot,   dir, startyear_init,     endyear_init),
-         cmd_dcSoil  = paste(here("src/proc_trendy_dsoc.sh"),        filn_cSoil,   dir),
-         cmd_dcVeg   = paste(here("src/proc_trendy_dsoc.sh"),        filn_cVeg,    dir),
-         cmd_dcLeaf  = paste(here("src/proc_trendy_dsoc.sh"),        filn_cLeaf,   dir),
-         cmd_dcWood  = paste(here("src/proc_trendy_dsoc.sh"),        filn_cWood,   dir)
-         ) |> 
+  mutate(
+    cmd_cVeg    = paste(here("src/proc_trendy_soc_biomass.sh"), filn_cVeg,    dir, startyear_init,     endyear_init),
+    cmd_gpp     = paste(here("src/proc_trendy_soc_biomass.sh"), filn_gpp_ANN, dir, startyear_gpp_init, endyear_gpp_init),
+    cmd_npp     = paste(here("src/proc_trendy_soc_biomass.sh"), filn_npp_ANN, dir, startyear_npp_init, endyear_npp_init),
+    cmd_cRoot   = paste(here("src/proc_trendy_soc_biomass.sh"), filn_cRoot,   dir, startyear_init,     endyear_init)
+    ) |> 
   
   rowwise() |> 
-  mutate(filn_cVeg_init    = paste0(filn_cVeg,    "_INIT_MEAN"),
-         filn_cVeg_final   = paste0(filn_cVeg,    "_FINAL_MEAN"),
+  mutate(
+    filn_npp_init     = paste0(filn_npp_ANN, "_INIT_MEAN"),
+    filn_npp_final    = paste0(filn_npp_ANN, "_FINAL_MEAN"),
+
+    filn_gpp_init     = paste0(filn_gpp_ANN, "_INIT_MEAN"),
+    filn_gpp_final    = paste0(filn_gpp_ANN, "_FINAL_MEAN"),
+
+    filn_cVeg_init    = paste0(filn_cVeg,    "_INIT_MEAN"),
+    filn_cVeg_final   = paste0(filn_cVeg,    "_FINAL_MEAN"),
    
-         filn_cLeaf_init   = paste0(filn_cLeaf,   "_INIT_MEAN"),
-         filn_cLeaf_final  = paste0(filn_cLeaf,   "_FINAL_MEAN"),
-   
-         filn_cRoot_init   = paste0(filn_cRoot,   "_INIT_MEAN"),
-         filn_cRoot_final  = paste0(filn_cRoot,   "_FINAL_MEAN"),
-   
-         filn_cWood_init   = paste0(filn_cWood,   "_INIT_MEAN"),
-         filn_cWood_final  = paste0(filn_cWood,   "_FINAL_MEAN"),
-            
-         filn_cSoil_init   = paste0(filn_cSoil,   "_INIT_MEAN"),
-         filn_cSoil_final  = paste0(filn_cSoil,   "_FINAL_MEAN"),
-          
-         filn_cSoil_change = paste0(filn_cSoil,   "_CHANGE"),
-         filn_cVeg_change  = paste0(filn_cVeg,    "_CHANGE"),
-         filn_cLeaf_change = paste0(filn_cLeaf,   "_CHANGE"),
-         filn_cWood_change = paste0(filn_cWood,   "_CHANGE"),
-                  
-         filn_npp_init     = paste0(filn_npp_ANN, "_INIT_MEAN"),
-         filn_npp_final    = paste0(filn_npp_ANN, "_FINAL_MEAN")
-         )
+    filn_cRoot_init   = paste0(filn_cRoot,   "_INIT_MEAN"),
+    filn_cRoot_final  = paste0(filn_cRoot,   "_FINAL_MEAN")
+    )
 ```
 
 Execute function using CDO.
 ```{r eval=FALSE}
-## convert NPP units (worked except for LPX and DLEM)
+# xxx test
+df <- df[1,]
+
+## convert NPP and GPP units (worked except for LPX and DLEM)
 out <- purrr::map(as.list(df |> pull(cmd_npp_units)), ~system(., intern = TRUE))
+# out <- purrr::map(as.list(df |> pull(cmd_gpp_units)), ~system(., intern = TRUE))
 
-## get cVeg as a mean over the period at the beginning and the end of the simulations
-out <- purrr::map(as.list(df |> pull(cmd_cVeg)),   ~system(., intern = TRUE))
-
-## get cSoil as a mean over the period at the beginning and the end of the simulations
-out <- purrr::map(as.list(df |> pull(cmd_cSoil)),  ~system(., intern = TRUE))
+## get GPP as a mean over the period at the beginning and the end of the simulations
+# out <- purrr::map(as.list(df |> pull(cmd_gpp)),    ~system(., intern = TRUE))
 
 ## get NPP as a mean over the period at the beginning and the end of the simulations
 out <- purrr::map(as.list(df |> pull(cmd_npp)),    ~system(., intern = TRUE))
 
-## get additional fields needed to estimate steady-state for soil C
-out <- purrr::map(as.list(df |> pull(cmd_dcSoil)), ~system(., intern = TRUE))
+## get cVeg as a mean over the period at the beginning and the end of the simulations
+out <- purrr::map(as.list(df |> pull(cmd_cVeg)),   ~system(., intern = TRUE))
 
-# ## get additional fields needed to estimate steady-state for veg C, leaf C, and wood C
-# out <- purrr::map(as.list(df |> pull(cmd_dcVeg)), ~system(., intern = TRUE))
-# out <- purrr::map(as.list(df |> pull(cmd_dcLeaf)), ~system(., intern = TRUE))
-# out <- purrr::map(as.list(df |> pull(cmd_dcWood)), ~system(., intern = TRUE))
-
-## for remaining...
-out <- purrr::map(as.list(df |> pull(cmd_cLeaf)),  ~system(., intern = TRUE))
-out <- purrr::map(as.list(df |> pull(cmd_cWood)),  ~system(., intern = TRUE))
 out <- purrr::map(as.list(df |> pull(cmd_cRoot)),  ~system(., intern = TRUE))
 ```
 
@@ -239,493 +225,183 @@ gdf <- purrr::map(
     df$filn_cRoot_init[.],
     df$filn_cRoot_final[.]
         
-    # df$filn_cSoil_init[.],
-    # df$filn_cSoil_final[.],
-    # 
-    # df$filn_cLeaf_init[.],
-    # df$filn_cLeaf_final[.],
-    # 
-    # df$filn_cWood_init[.],
-    # df$filn_cWood_final[.],
-    # 
-    # df$filn_cSoil_change[.],
-    # df$filn_cVeg_change[.]
     )) |> 
   
   bind_rows() |>
-
-  # ## get aboveground biomass as sum of cWood and cLeaf
-  # mutate(cveg_ag_init = cleaf_init + cwood_init,
-  #        cveg_ag_final = cleaf_final + cwood_final
-  #        ) |>
 
   group_by(modl) |>
   nest()
 ```
 
-Some tests.
-```{r}
-make_hist <- function(df){
-  gg <- df |> 
-    mutate(dnpp = npp_final / npp_init) |> 
-    filter(dnpp > 0.2 & dnpp < 3) |> 
-    ggplot(aes(x = dnpp, y = ..density..)) +
-    geom_histogram()
-  return(gg)
-}
-
-gdf <- gdf |> 
-  mutate(gg_hist_dnpp = purrr::map(data, ~make_hist(.)))
-
-testdf <- gdf$data[[1]] |>
-  mutate(dnpp = npp_final / npp_init)
-```
-
-<!-- Weird:  -->
-<!-- - CABLE has constant NPP. -->
-
 ## Calculate relationships
 
 ```{r}
-get_deltas <- function(df){
-  df |>
-    mutate(dcveg = (cveg_final - cveg_init)/cveg_init,
-           dcveg_ag = (cveg_ag_final - cveg_ag_init)/cveg_ag_init,
-           dnpp = (npp_final - npp_init)/npp_init,
-           dcsoil = (csoil_final - csoil_init)/csoil_init,
-           dcsoil_star = (csoil_star_final - csoil_star_init)/csoil_star_init
-           )
-}
-
-get_csoil_star <- function(df){
-  df |>
-    mutate(csoil_star_init  = csoil_init) |>
-    # mutate(csoil_change = csoil_final - csoil_init) |>   # overwriting what's read from file - XXX This was wrong XXX
-    mutate(csoil_change = csoil_change / 10.0) |>
-    mutate(csoil_star_final = csoil_final / (1.0 - (csoil_change)/npp_final ))
-}
+source(here("R/get_deltas.R"))
 
 gdf <- gdf |>
-  mutate(data = purrr::map(data, ~get_csoil_star(.))) |>
   mutate(data = purrr::map(data, ~get_deltas(.)))
 ```
 
-Plot relationships:
+## Plots
 
-### Biomass vs. NPP change
+### Cveg vs NPP
 
+All models pooled.
 ```{r}
-## just one model
-modobs <- gdf$data[[2]] |>
-  dplyr::filter(dnpp < 2 & dnpp > -2 & dcveg < 2 & dcveg > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
-  analyse_modobs2("dnpp", "dcveg", type = "heat", plot_subtitle = FALSE, plot_linmod = FALSE)
-modobs$gg +
-  xlim(c(-0.5,1)) + ylim(c(-0.5,1)) +
-  labs(title = gdf$modl[[2]])
+# sample for even representation, number determined by model with smallest 
+# number of gridcells
+nsample <- gdf |> 
+  mutate(len = purrr::map_int(data, ~nrow(.))) |> 
+  pull(len) |> 
+  min()
 
-## all models pooled
-gdf |>
+# all models pooled
+gg1 <- gdf |>
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) |>
   unnest(data) |>
-  dplyr::filter(dnpp < 2 & dnpp > -2 & dcveg < 2 & dcveg > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
-  ggplot(aes(x = dnpp, y = dcveg)) +
-  stat_density_2d(aes(fill = after_stat(level)), geom = "polygon") +
-  theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5))
-
-## all models separately (facet_grid)
-gdf |>
-  dplyr::filter(modl != "CABLE-POP") |>
-  unnest(data) |>
-  bind_rows(
-    .,
-    gdf |>
-      dplyr::filter(modl != "CABLE-POP") |>
-      mutate(n = purrr::map_int(data, ~nrow(.))) |>
-      mutate(data = purrr::map(data, ~slice_sample(., n = 4420))) |> # smallest set here
-      unnest(data) |>
-      mutate(modl = "ALL")
-  ) |>
-  dplyr::filter(dnpp>-0.9) |> # remove points where veg collapses
-  dplyr::filter(dnpp < 2 & dnpp > -2 & dcveg < 2 & dcveg > -2) |>
   dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
   ggplot(aes(x = dnpp, y = dcveg)) +
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
+  geom_hex(bins = 50, show.legend = FALSE) +
   theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
-  facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
-  xlim(-0.1, 0.9) + ylim(-0.1, 0.9) +
-  theme(legend.position = "none",
-        strip.background = element_blank())
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, "NPP/NPP")),
+    y = expression(paste(Delta, italic(C)[veg], "/", italic(C)[veg]))
+  )
 
-ggsave("fig/cveg_dnpp_trendy_s1_bymodl.pdf", width = 9, height = 7)
+gg2 <- gdf |>
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) |>
+  unnest(data) |> 
+  ggplot(aes(x = l_npp_cveg, y = ..density..)) +
+  geom_density(fill = "grey70") +
+  theme_classic() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) + 
+  labs(
+    x = expression(paste(italic(L)[Cveg/NPP]))
+  )
 
-# modobs <- gdf |>
-#   unnest(data) |>
-#   dplyr::filter(dnpp < 2 & dnpp > -2 & dcveg < 2 & dcveg > -2) |>
-#   dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
-#   analyse_modobs2("dnpp", "dcveg", type = "hex", plot_subtitle = FALSE, plot_linmod = FALSE)
-# modobs$gg +
-#   xlim(c(-0.5,1)) + ylim(c(-0.5,1)) +
-#   labs(title = "All models pooled")
+cowplot::plot_grid(
+  gg1, 
+  gg2,
+  ncol = 2
+)
+
+ggsave(here("fig/cveg_npp_trendy.pdf"), width = 8, height = 4)
 ```
 
-### SOC vs. NPP change
-
+By model: heat plot
 ```{r}
-## one model
-modobs <- gdf$data[[2]] |>
-  dplyr::filter(dnpp < 2 & dnpp > -2 & dcsoil_star < 2 & dcsoil_star > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcsoil_star), !is.infinite(dnpp), !is.infinite(dcsoil_star)) |>
-  analyse_modobs2("dnpp", "dcsoil_star", type = "heat", plot_subtitle = FALSE, plot_linmod = FALSE)
-modobs$gg +
-  xlim(c(-0.5,1)) + ylim(c(-0.5,1)) +
-  labs(title = gdf$modl[[2]])
-
-## all models pooled
-modobs <- gdf |>
-  unnest(data) |>
-  dplyr::filter(dnpp < 2 & dnpp > -2 & dcsoil_star < 2 & dcsoil_star > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcsoil_star), !is.infinite(dnpp), !is.infinite(dcsoil_star)) |>
-  analyse_modobs2("dnpp", "dcsoil_star", type = "hex", plot_subtitle = FALSE, plot_linmod = FALSE)
-modobs$gg +
-  xlim(c(-0.1,0.7)) + ylim(c(-0.1,0.7)) +
-  labs(title = "All models pooled")
-
-## cSoil* vs. NPP, all models separately (facet_grid)
-gdf |>
-  dplyr::filter(modl != "CABLE-POP") |>
-  unnest(data) |>
-  bind_rows(
-    .,
-    gdf |>
-      dplyr::filter(modl != "CABLE-POP") |>
-      mutate(n = purrr::map_int(data, ~nrow(.))) |>
-      mutate(data = purrr::map(data, ~slice_sample(., n = 4420))) |> # smallest set here
-      unnest(data) |>
-      mutate(modl = "ALL")
-  ) |>
-  dplyr::filter(dcsoil_star < 2 & dcsoil_star > -2 & dnpp < 2 & dnpp > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dnpp), !is.infinite(dnpp), !is.infinite(dnpp)) |>
-  ggplot(aes(x = dnpp, y = dcsoil_star)) +
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
-  theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
-  facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
-  xlim(-0.3, 1.2) + ylim(-0.3, 1.2) +
-  labs(x = expression(paste(Delta, "NPP", "/NPP")),
-       y = expression(paste(Delta, "C"[soil], "/C"[soil]))) +
-  theme(legend.position = "none",
-        strip.background = element_blank())
-
-ggsave("fig/csoil_dnpp_trendy_s1_bymodl.pdf", width = 9, height = 7)
-```
-
-### SOC vs. biomass change
-
-```{r}
-# # one model
-# modobs <- gdf$data[[2]] |>
-#   dplyr::filter(dcveg < 2 & dcveg > -2 & dcsoil_star < 2 & dcsoil_star > -2) |>
-#   dplyr::filter(!is.nan(dcveg), !is.nan(dcsoil_star), !is.infinite(dcveg), !is.infinite(dcsoil_star)) |>
-#   analyse_modobs2("dcveg", "dcsoil_star", type = "heat", plot_subtitle = FALSE, plot_linmod = FALSE)
-# modobs$gg +
-#   xlim(c(-0.5,1)) + ylim(c(-0.5,1)) +
-#   labs(title = gdf$modl[[2]])
-
-## cSoil*, all models pooled
 gdf |>
   unnest(data) |>
-  dplyr::filter(dcsoil_star < 2 & dcsoil_star > -2 & dcveg < 2 & dcveg > -2) |>
   dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
-  
-  ggplot(aes(x = dcveg, y = dcsoil_star)) +
-  
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
+  ggplot(aes(x = dnpp, y = dcveg)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
   theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
-  xlim(-0.1, 1) + ylim(-0.1, 1) +
-  labs(x = expression(paste(Delta, "C"[veg], "/C"[veg])),
-       y = expression(paste(Delta, "C"[soil], "/C"[soil])))
-  # theme(legend.position = "none",
-  #       strip.background = element_blank())
-
-## cSoil*, all models separately (facet_grid)
-gdf |>
-  unnest(data) |>
-  bind_rows(
-    .,
-    gdf |>
-      mutate(n = purrr::map_int(data, ~nrow(.))) |>
-      mutate(data = purrr::map(data, ~slice_sample(., n = 1956))) |> # smallest set here
-      unnest(data) |>
-      mutate(modl = "ALL")
-  ) |>
-  dplyr::filter(dcsoil_star < 2 & dcsoil_star > -2 & dcveg < 2 & dcveg > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
-  
-  ggplot(aes(x = dcveg, y = dcsoil_star)) +
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
-  theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, "NPP/NPP")),
+    y = expression(paste(Delta, italic(C)[veg], "/", italic(C)[veg]))
+  ) +
   facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
-  xlim(-0.1, 1) + ylim(-0.1, 1) +
-  labs(x = expression(paste(Delta, "C"[veg], "/C"[veg])),
-       y = expression(paste(Delta, "C"[soil], "/C"[soil]))) +
-  theme(legend.position = "none",
-        strip.background = element_blank())
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, hjust = 0)
+    )
 
-ggsave("fig/csoil_cveg_trendy_s1_bymodl.pdf", width = 9, height = 7)
-
-## cSoil, all models separately (facet_grid)
-gdf |>
-  unnest(data) |>
-  bind_rows(
-    .,
-    gdf |>
-      mutate(n = purrr::map_int(data, ~nrow(.))) |>
-      mutate(data = purrr::map(data, ~slice_sample(., n = 4420))) |> # smallest set here
-      unnest(data) |>
-      mutate(modl = "ALL")
-  ) |>
-  dplyr::filter(dcsoil < 2 & dcsoil > -2 & dcveg < 2 & dcveg > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
-  
-  ggplot(aes(x = dcveg, y = dcsoil)) +
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
-  theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
-  facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
-  xlim(-0.1, 0.9) + ylim(-0.1, 0.9) +
-  theme(legend.position = "none",
-        strip.background = element_blank())
+ggsave(here("fig/cveg_npp_trendy_bymodel.pdf"), width = 4, height = 4)
 ```
 
-### SOC vs. aboveground biomass change
+### Croot vs Cveg
 
+All models pooled.
 ```{r}
-## cSoil*, all models separately (facet_grid)
-gdf |>
+# sample for even representation, number determined by model with smallest 
+# number of gridcells
+nsample <- gdf |> 
+  mutate(len = purrr::map_int(data, ~nrow(.))) |> 
+  pull(len) |> 
+  min()
+
+# all models pooled
+gg1 <- gdf |>
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) |>
   unnest(data) |>
-  # bind_rows(
-  #   .,
-  #   gdf |>
-  #     mutate(n = purrr::map_int(data, ~nrow(.))) |>
-  #     mutate(data = purrr::map(data, ~slice_sample(., n = 4420))) |> # smallest set here
-  #     unnest(data) |>
-  #     mutate(modl = "ALL")
-  # ) |>
-  dplyr::filter(dcsoil_star < 2 & dcsoil_star > -2 & dcveg_ag < 2 & dcveg_ag > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg_ag), !is.infinite(dnpp), !is.infinite(dcveg_ag)) |>
-  
-  ggplot(aes(x = dcveg_ag, y = dcsoil_star)) +
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
+  dplyr::filter(!is.nan(dcroot), !is.nan(dcveg), !is.infinite(dcroot), !is.infinite(dcveg)) |>
+  ggplot(aes(x = dcveg, y = dcroot)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
   theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  geom_vline(xintercept = 0, color = "grey50", size = 0.2) +
-  geom_hline(yintercept = 0, color = "grey50", size = 0.2) +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
-  facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
-  xlim(-0.2, 1.0) + ylim(-0.2, 1.0) +
-  labs(x = expression(paste(Delta, "C"[ag-veg], "/C"[ag-veg])),
-       y = expression(paste(Delta, "C"[soil], "/C"[soil]))) +
-  theme(legend.position = "none",
-        strip.background = element_blank())
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, italic(C)[veg], "/", italic(C)[veg])),
+    y = expression(paste(Delta, italic(C)[root], "/", italic(C)[root]))
+  )
 
-ggsave("fig/csoil_cveg_ag_trendy_s1_bymodl.pdf", width = 7, height = 7)
-
-
-## cSoil*, all models pooled
-gdf |>
-
-  ## sample 1957 points from each model (corresponds to the number of gridcell of the model with coarsest res.)
-  mutate(data = purrr::map(data, ~slice_sample(., n = 1957))) |> # smallest set here
-  unnest(data) |>
-  mutate(modl = "ALL") |>
-
-  dplyr::filter(dcsoil_star < 2 & dcsoil_star > -2 & dcveg_ag < 2 & dcveg_ag > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg_ag), !is.infinite(dnpp), !is.infinite(dcveg_ag)) |>
-  
-  ggplot(aes(x = dcveg_ag, y = dcsoil_star)) +
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
+gg2 <- gdf |>
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) |>
+  unnest(data) |> 
+  ggplot(aes(x = l_croot_cveg, y = ..density..)) +
+  geom_density(fill = "grey70") +
   theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  geom_vline(xintercept = 0, color = "grey50", size = 0.2) +
-  geom_hline(yintercept = 0, color = "grey50", size = 0.2) +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
-  # facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
-  xlim(-0.2, 1.0) + ylim(-0.2, 1.0) +
-  labs(x = expression(paste(Delta, "C"[ag-veg], "/C"[ag-veg])),
-       y = expression(paste(Delta, "C"[soil], "/C"[soil]))) +
-  theme(legend.position = "none",
-        strip.background = element_blank())
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) + 
+  labs(
+    x = expression(paste(italic(L)[Croot/Cveg]))
+  )
 
-ggsave("fig/csoil_cveg_ag_trendy_s1_pooled.pdf", width = 4, height = 3)
+cowplot::plot_grid(
+  gg1, 
+  gg2,
+  ncol = 2
+)
 
-# ## Cesar's figure
-# df_cesar <- read_csv("./data/model_data_mean_long.csv")
-#
-# obs.mods <- ggplot(df_cesar, aes(make_pct(Cabove), make_pct(Csoil), colour=type)) +
-#   geom_smooth(size=.5,data=filter(df_cesar,type=="modeled"), method = "lm", se=FALSE, color="#e41a1c", formula = y ~ x) +
-#   stat_smooth(size=.5,data=filter(df_cesar,type=="observed"), method = "lm", se=FALSE, color="#377eb8", formula = y ~ poly(x, 3)) + # orthogonal polynomials, in this case with a 3rd order
-#   geom_errorbar(aes(ymin=make_pct(Csoil)-make_pct(SE.soil), ymax=make_pct(Csoil)+make_pct(SE.soil)), width=1,size=.3,colour="black") +
-#   geom_point(aes(shape=Site),size=1.5,fill="white",alpha=.7) +
-#   scale_shape_manual(values=c(21:25,4)) + guides(colour=guide_legend(title=NULL)) +
-#   scale_colour_manual(values=c("#e41a1c","#377eb8")) +
-#   guides(col = guide_legend(title = NULL,order = 0),
-#          shape = guide_legend(title = "Experiment",order = 1)) +
-#   labs(x=expression(paste(CO[2]," effect on biomass carbon (%)", sep="")),
-#        y=expression(paste(CO[2]," effect on soil carbon (%)", sep=""))) +
-#   theme_cowplot(font_size=8) +
-#   theme(legend.position = c(0.7, 0.7),
-#         legend.spacing.y = unit(2, "pt"))
-
-
-## cSoil, all models separately (facet_grid)
-gdf |>
-  dplyr::filter(modl != "CABLE-POP") |>
-  unnest(data) |>
-  bind_rows(
-    .,
-    gdf |>
-      dplyr::filter(modl != "CABLE-POP") |>
-      mutate(n = purrr::map_int(data, ~nrow(.))) |>
-      mutate(data = purrr::map(data, ~slice_sample(., n = 4420))) |> # smallest set here
-      unnest(data) |>
-      mutate(modl = "ALL")
-  ) |>
-  dplyr::filter(dcsoil < 2 & dcsoil > -2 & dcveg_ag < 2 & dcveg_ag > -2) |>
-  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg_ag), !is.infinite(dnpp), !is.infinite(dcveg_ag)) |>
-  ggplot(aes(x = dcveg_ag, y = dcsoil)) +
-  stat_density_2d(aes(fill = after_stat(nlevel)), geom = "polygon") +
-  theme_classic() +
-  geom_abline(intercept=0, slope=1, linetype="dotted") +
-  scale_fill_gradientn(colours = colorRampPalette( c("gray65", "navy", "red", "yellow"))(5),
-                       guide = "legend") +
-  facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
-  xlim(-0.1, 0.9) + ylim(-0.1, 0.9) +
-  theme(legend.position = "none",
-        strip.background = element_blank())
+ggsave(here("fig/croot_cveg_trendy.pdf"), width = 8, height = 4)
 ```
 
-### Distribution before and after aggregation
-
+By model: heat plot
 ```{r}
-## as an example, take LPJ-GUESS outputs
-df <- gdf |> filter(modl=="LPJ-GUESS") |> unnest(data)
+gdf |>
+  unnest(data) |>
+  dplyr::filter(!is.nan(dcroot), !is.nan(dcveg), !is.infinite(dcroot), !is.infinite(dcveg)) |>
+  ggplot(aes(x = dcveg, y = dcroot)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, italic(C)[veg], "/", italic(C)[veg])),
+    y = expression(paste(Delta, italic(C)[root], "/", italic(C)[root]))
+  ) +
+  facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, hjust = 0)
+    )
 
-## "bin" to gridcells
-dlon <- 2
-dlat <- 2
-lon_breaks <- seq(from = floor(min(df$lon)), to = ceiling(max(df$lon)), by = dlon)
-lat_breaks <- seq(from = floor(min(df$lat)), to = ceiling(max(df$lat)), by = dlat)
-
-df <- df |>
-  ungroup() |> 
-  mutate(ilon = cut(lon, 
-                    breaks = lon_breaks
-                    ),
-         ilat = cut(lat, 
-                    breaks = lat_breaks
-                    )
-         ) |> 
-  mutate(lon_lower = as.numeric( sub("\\((.+),.*", "\\1", ilon)),
-         lon_upper = as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", ilon) ),
-         lat_lower = as.numeric( sub("\\((.+),.*", "\\1", ilat) ),
-         lat_upper = as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", ilat) )
-         ) |> 
-  mutate(lon_mid = (lon_lower + lon_upper)/2,
-         lat_mid = (lat_lower + lat_upper)/2)
-
-## aggregate (remap)
-df_agg <- df |> 
-  ungroup() |> 
-  group_by(lon_mid, lat_mid) |> 
-  summarise(csoil_init = mean(csoil_init, na.rm = TRUE),
-            cveg_init = mean(cveg_init, na.rm = TRUE))
-
-## sample
-df_sampl <- df |> 
-  ungroup() |> 
-  slice_sample(n = 4488)
-
-## by aggregation
-##---------------
-## soil C
-gg1 <- df |> 
-  ungroup() |> 
-  dplyr::select(csoil_init) |> 
-  mutate(resolution = "original") |> 
-  rbind(df_agg |> 
-          ungroup() |> 
-          dplyr::select(csoil_init) |> 
-          mutate(resolution = "coarse")) |> 
-  ggplot(aes(x = csoil_init, y = ..density.., fill = resolution)) +
-  geom_histogram(alpha = 0.5, position="identity") +
-  labs(title = "Initial soil C", subtitle = "Remapping LPJ-GUESS", x = expression(paste("Soil C (kg m"^-2, ")")))
-
-## veg C
-gg2 <- df |> 
-  ungroup() |> 
-  dplyr::select(cveg_init) |> 
-  mutate(resolution = "original") |> 
-  rbind(df_agg |> 
-          ungroup() |> 
-          dplyr::select(cveg_init) |> 
-          mutate(resolution = "coarse")) |> 
-  ggplot(aes(x = cveg_init, y = ..density.., fill = resolution)) +
-  geom_histogram(alpha = 0.5, position="identity") +
-  labs(title = "Initial vegetation C", subtitle = "Remapping LPJ-GUESS", x = expression(paste("Vegetation C (kg m"^-2, ")")))
-
-## by sampling
-##---------------
-## soil C
-gg3 <- df |> 
-  ungroup() |> 
-  dplyr::select(csoil_init) |> 
-  mutate(sample = "all") |> 
-  rbind(df_sampl |> 
-          ungroup() |> 
-          dplyr::select(csoil_init) |> 
-          mutate(sample = "subset")) |> 
-  ggplot(aes(x = csoil_init, y = ..density.., fill = sample)) +
-  geom_histogram(alpha = 0.5, position="identity") +
-  labs(title = "Initial soil C", subtitle = "Sampling LPJ-GUESS", x = expression(paste("Soil C (kg m"^-2, ")")))
-
-## veg C
-gg4 <- df |> 
-  ungroup() |> 
-  dplyr::select(cveg_init) |> 
-  mutate(sample = "all") |> 
-  rbind(df_sampl |> 
-          ungroup() |> 
-          dplyr::select(cveg_init) |> 
-          mutate(sample = "subset")) |> 
-  ggplot(aes(x = cveg_init, y = ..density.., fill = sample)) +
-  geom_histogram(alpha = 0.5, position="identity") +
-  labs(title = "Initial vegetation C", subtitle = "Sampling LPJ-GUESS", x = expression(paste("Vegetation C (kg m"^-2, ")")))
-
-library(patchwork)
-(gg1 + gg2) /
-  (gg3 + gg4)
-ggsave("fig/distr_aggregation.pdf", width = 10, height = 7)
-```
-
-Write to file.
-```{r}
-save(gdf, file = "data/gdf.RData")
+ggsave(here("fig/croot_cveg_trendy_bymodel.pdf"), width = 4, height = 4)
 ```

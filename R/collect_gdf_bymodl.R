@@ -40,71 +40,23 @@ collect_gdf_bymodl <- function(modl, dir,
       by = c("lon", "lat")
     ) |>
 
-    # ## cSoil
+    # ## GPP
     # left_join(
-    #   read_nc_onefile(paste0(dir, "/processed/", filn_cSoil_init, ".nc"), ignore_time = TRUE, varnam = "cSoil") |>
-    #     nc_to_df(varnam = "cSoil") |>
+    #   read_nc_onefile(paste0(dir, "/processed/", filn_gpp_init, ".nc"), ignore_time = TRUE, varnam = "gpp") |>
+    #     nc_to_df(varnam = "gpp") |>
     #     tidyr::drop_na() |>
-    #     dplyr::rename(csoil_init = "cSoil"),
+    #     dplyr::rename(gpp_init = "gpp") |>
+    #     mutate(gpp_init = gpp_init),
     #   by = c("lon", "lat")
     # ) |>
     # left_join(
-    #   read_nc_onefile(paste0(dir, "/processed/", filn_cSoil_final, ".nc"), ignore_time = TRUE, varnam = "cSoil") |>
-    #     nc_to_df(varnam = "cSoil") |>
+    #   read_nc_onefile(paste0(dir, "/processed/", filn_gpp_final, ".nc"), ignore_time = TRUE, varnam = "gpp") |>
+    #     nc_to_df(varnam = "gpp") |>
     #     tidyr::drop_na() |>
-    #     dplyr::rename(csoil_final = "cSoil"),
+    #     dplyr::rename(gpp_final = "gpp") |>
+    #     mutate(gpp_final = gpp_final),
     #   by = c("lon", "lat")
     # ) |>
-    #
-    # ## cLeaf
-    # left_join(
-    #   read_nc_onefile(paste0(dir, "/processed/", filn_cLeaf_init, ".nc"), ignore_time = TRUE, varnam = "cLeaf") |>
-    #     nc_to_df(varnam = "cLeaf") |>
-    #     tidyr::drop_na() |>
-    #     dplyr::rename(cleaf_init = "cLeaf"),
-    #   by = c("lon", "lat")
-    # ) |>
-    # left_join(
-    #   read_nc_onefile(paste0(dir, "/processed/", filn_cLeaf_final, ".nc"), ignore_time = TRUE, varnam = "cLeaf") |>
-    #     nc_to_df(varnam = "cLeaf") |>
-    #     tidyr::drop_na() |>
-    #     dplyr::rename(cleaf_final = "cLeaf"),
-    #   by = c("lon", "lat")
-    # ) |>
-    #
-    # ## cWood
-    # left_join(
-    #   read_nc_onefile(paste0(dir, "/processed/", filn_cWood_init, ".nc"), ignore_time = TRUE, varnam = "cWood") |>
-    #     nc_to_df(varnam = "cWood") |>
-    #     tidyr::drop_na() |>
-    #     dplyr::rename(cwood_init = "cWood"),
-    #   by = c("lon", "lat")
-    # ) |>
-    # left_join(
-    #   read_nc_onefile(paste0(dir, "/processed/", filn_cWood_final, ".nc"), ignore_time = TRUE, varnam = "cWood") |>
-    #     nc_to_df(varnam = "cWood") |>
-    #     tidyr::drop_na() |>
-    #     dplyr::rename(cwood_final = "cWood"),
-    #   by = c("lon", "lat")
-    # ) |>
-
-    ## GPP
-    left_join(
-      read_nc_onefile(paste0(dir, "/processed/", filn_gpp_init, ".nc"), ignore_time = TRUE, varnam = "gpp") |>
-        nc_to_df(varnam = "gpp") |>
-        tidyr::drop_na() |>
-        dplyr::rename(gpp_init = "gpp") |>
-        mutate(gpp_init = gpp_init),
-      by = c("lon", "lat")
-    ) |>
-    left_join(
-      read_nc_onefile(paste0(dir, "/processed/", filn_gpp_final, ".nc"), ignore_time = TRUE, varnam = "gpp") |>
-        nc_to_df(varnam = "gpp") |>
-        tidyr::drop_na() |>
-        dplyr::rename(gpp_final = "gpp") |>
-        mutate(gpp_final = gpp_final),
-      by = c("lon", "lat")
-    ) |>
 
     ## NPP
     left_join(
