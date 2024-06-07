@@ -21,6 +21,7 @@ library(ggplot2)
 library(readr)
 library(stringr)
 library(here)
+library(rgeco)
 ```
 
 ## Approach
@@ -121,7 +122,8 @@ modls <- filnams |>
   
   pull(modl)
 
-datadir <- "~/data/trendy/v7/"
+# datadir <- "~/data/trendy/v7/"
+datadir <- "/data_1/trendy/v8"  # on GECO server
 
 df <- filnams |> 
   
@@ -213,45 +215,49 @@ out <- purrr::map(as.list(df |> pull(cmd_cRoot)),  ~system(., intern = TRUE))
 ... into tidy data frame
 
 ```{r}
-source("R/collect_gdf_bymodl.R")
+source(here("R/collect_gdf_bymodl.R"))
 
 gdf <- purrr::map(
 
-  as.list(seq(nrow(df))),
+  # seq(nrow(df)),
+  1,  # test
 
   ~collect_gdf_bymodl(
 
     df$modl[.],
     df$dir[.],
 
-    df$filn_cSoil_init[.],
-    df$filn_cSoil_final[.],
-
-    df$filn_cVeg_init[.],
-    df$filn_cVeg_final[.],
-
-    df$filn_cLeaf_init[.],
-    df$filn_cLeaf_final[.],
-
-    df$filn_cRoot_init[.],
-    df$filn_cRoot_final[.],
-
-    df$filn_cWood_init[.],
-    df$filn_cWood_final[.],
+    df$filn_gpp_init[.],
+    df$filn_gpp_final[.],
 
     df$filn_npp_init[.],
     df$filn_npp_final[.],
 
-    df$filn_cSoil_change[.],
-    df$filn_cVeg_change[.]
+    df$filn_cVeg_init[.],
+    df$filn_cVeg_final[.],
+
+    df$filn_cRoot_init[.],
+    df$filn_cRoot_final[.]
+        
+    # df$filn_cSoil_init[.],
+    # df$filn_cSoil_final[.],
+    # 
+    # df$filn_cLeaf_init[.],
+    # df$filn_cLeaf_final[.],
+    # 
+    # df$filn_cWood_init[.],
+    # df$filn_cWood_final[.],
+    # 
+    # df$filn_cSoil_change[.],
+    # df$filn_cVeg_change[.]
     )) |> 
   
   bind_rows() |>
 
-  ## get aboveground biomass as sum of cWood and cLeaf
-  mutate(cveg_ag_init = cleaf_init + cwood_init,
-         cveg_ag_final = cleaf_final + cwood_final
-         ) |>
+  # ## get aboveground biomass as sum of cWood and cLeaf
+  # mutate(cveg_ag_init = cleaf_init + cwood_init,
+  #        cveg_ag_final = cleaf_final + cwood_final
+  #        ) |>
 
   group_by(modl) |>
   nest()
