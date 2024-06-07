@@ -248,7 +248,8 @@ gdf <- gdf |>
 
 ### Cveg vs NPP
 
-All models pooled.
+#### Pooled 
+
 ```{r}
 # sample for even representation, number determined by model with smallest 
 # number of gridcells
@@ -299,7 +300,8 @@ cowplot::plot_grid(
 ggsave(here("fig/cveg_npp_trendy.pdf"), width = 8, height = 4)
 ```
 
-By model: heat plot
+#### Heat map - by model
+
 ```{r}
 gdf |>
   unnest(data) |>
@@ -325,6 +327,50 @@ gdf |>
     )
 
 ggsave(here("fig/cveg_npp_trendy_bymodel.pdf"), width = 4, height = 4)
+```
+
+#### Map - by model
+
+```{r}
+tmp <- gdf |>
+  unnest(data) |>
+  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg))
+
+coast <- rnaturalearth::ne_coastline(
+  scale = 110, 
+  returnclass = "sf"
+  )
+
+map_bymodl <- function(df, modl, coast){
+  
+  ggplot() +
+	  geom_raster(
+	    data = df |> 
+	      dplyr::filter(modl == modl),
+	    aes(x = lon, y = lat, fill = l_npp_cveg),
+	    show.legend = TRUE
+	    ) +
+    geom_sf(
+      data = coast,
+      colour = 'black',
+      linewidth = 0.3
+    )  +
+    coord_sf(
+      ylim = c(-60, 85),
+      expand = FALSE
+    ) +
+    khroma::scale_fill_berlin(
+      name = "",
+      limits = c(0,2), 
+      midpoint = 1
+      ) +
+    theme_void() +
+    labs(
+      title = modl
+    )
+}
+
+map_bymodl(tmp, "CABLE", coast)
 ```
 
 ### Croot vs Cveg
