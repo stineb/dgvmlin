@@ -1,0 +1,297 @@
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_rh.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_rh.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 3840 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_rh.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 3840 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_rh.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_rh.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 3840 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_rh.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 3828 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 3828 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_rh.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_rh.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_rh.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_rh.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_rh.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_cSoil.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_cSoil.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_cSoil.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_cSoil.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_cSoil.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_cSoil.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_cSoil.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_cSoil.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 320 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 320 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_cSoil.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_cSoil.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 318 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 318 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_cSoil.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_cVeg.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_cVeg.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_cVeg.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_cVeg.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_cVeg.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_cVeg.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_cVeg.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_cVeg.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 320 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 320 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_cVeg.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_cVeg.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 318 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 318 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_cVeg.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_gpp.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_gpp.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 3840 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_gpp.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 3840 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_gpp.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 3840 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_gpp.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 3840 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_gpp.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 3828 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 3828 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_gpp.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_gpp.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_gpp.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_gpp.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_gpp.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_npp.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_npp.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 3840 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_npp.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 3840 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_npp.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 3840 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_npp.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 3840 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 3840 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_npp.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 3828 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 3828 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_npp.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_npp.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_npp.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_npp.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_gpp.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_cLitter.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_cLitter.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_cLitter.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_cLitter.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_cLitter.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_cLitter.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_cLitter.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_cLitter.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 320 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 320 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_gpp.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_cLitter.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 318 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 318 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_gpp.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_cWood.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_cWood.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_cWood.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_cWood.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_cWood.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_cWood.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_cWood.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_gpp.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_gpp.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_gpp.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_gpp.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_cLeaf.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_cLeaf.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_cLeaf.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_cLeaf.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_cLeaf.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_cLeaf.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_cLeaf.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 3828 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_gpp.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_gpp.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_gpp.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_gpp.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+/Users/echo/E/RA/trendy_v9/CABLE-POP_S1_cRoot.nc
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+for model CABLE-POP lon_num is 360 and lat_num is 180 and time is 3840 
+/Users/echo/E/RA/trendy_v9/CLM5.0_S1_cRoot.nc
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+for model CLM5.0 lon_num is 288 and lat_num is 192 and time is 320 
+/Users/echo/E/RA/trendy_v9/ISAM_S1_cRoot.nc
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+for model ISAM lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/LPJ-GUESS_S1_cRoot.nc
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+for model LPJ-GUESS lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE_S1_cRoot.nc
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+for model ORCHIDEE lon_num is 720 and lat_num is 360 and time is 320 
+/Users/echo/E/RA/trendy_v9/ORCHIDEE-CNP_S1_cRoot.nc
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+for model ORCHIDEE-CNP lon_num is 180 and lat_num is 90 and time is 319 
+/Users/echo/E/RA/trendy_v9/CLASSIC_S1_cRoot.nc
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+for model CLASSIC lon_num is 128 and lat_num is 64 and time is 319 
+/Users/echo/E/RA/trendy_v9/JSBACH_S1_gpp.nc
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+for model JSBACH lon_num is 192 and lat_num is 96 and time is 3840 
+/Users/echo/E/RA/trendy_v9/JULES-ES-1p0_S1_gpp.nc
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+for model JULES-ES-1p0 lon_num is 192 and lat_num is 144 and time is 3840 
+/Users/echo/E/RA/trendy_v9/LPJ_S1_gpp.nc
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+for model LPJ lon_num is 720 and lat_num is 360 and time is 3816 
+/Users/echo/E/RA/trendy_v9/VISIT_S1_gpp.nc
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
+for model VISIT lon_num is 720 and lat_num is 360 and time is 1920 
