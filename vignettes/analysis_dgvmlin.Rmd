@@ -362,7 +362,8 @@ map_bymodl <- function(df, modl, coast){
     khroma::scale_fill_berlin(
       name = "",
       limits = c(0,2), 
-      midpoint = 1
+      midpoint = 1, 
+      reverse = TRUE
       ) +
     theme_void() +
     labs(
