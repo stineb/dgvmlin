@@ -392,7 +392,7 @@ gdf <- gdf %>%
   mutate(data = purrr::map(data, ~get_deltas(.))) %>%
   mutate(data = purrr::map(data, ~Land_cover_no_change(.)))
 
-#save(gdf,file=here("data/gdf_Trendyv11_202406.rda"))
+#save(gdf,file=here("data/gdf_Trendyv11_202407.rda"))
 
 summary_table <- as.data.frame(c('ALL','CLASSIC',
 'IBIS',
@@ -428,7 +428,7 @@ summary_table$CN_coupled<-c(NA,'No',
 'Yes',
 'No',
 'Yes')
-load(here("data/gdf_Trendyv11_202406.rda"))
+load(here("data/gdf_Trendyv11_202407.rda"))
 
 ```
 
@@ -1320,5 +1320,157 @@ cowplot::plot_grid(
 )
 
 ggsave(filename = here("fig/Spatial_MAP_dcveg_dcroot_trendyv11.pdf"),height=4, width = 9)
+```
+
+
+### cLeaf -> cRoot 
+
+#### All models pooled
+
+```{r}
+
+# all models pooled
+gg1 <- gdf %>%
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
+  unnest(data) %>%
+  dplyr::filter(!is.nan(dCroot), !is.nan(dcleaf), !is.infinite(dCroot), !is.infinite(dcleaf)) %>%
+  ggplot(aes(x = dcleaf, y = dCroot)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    y = expression(paste(Delta, italic(C)[root], "/", italic(C)[root])),
+    x = expression(paste(Delta, italic(C)[leaf], "/", italic(C)[leaf]))
+  )
+
+supernice_gdf<-gdf %>%
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
+  unnest(data)%>%
+  dplyr::filter(!is.nan(dCroot), !is.nan(dcleaf), !is.infinite(dCroot), !is.infinite(dcleaf)) %>%
+  mutate(l_croot_cleaf = dCroot/ dcleaf)%>%
+  filter(l_croot_cleaf<100000, l_croot_cleaf>-1000000) 
+
+
+
+# Lables for Histogram  
+Labels <- supernice_gdf%>%
+  ungroup()%>%
+  mutate(l_larger_than_one = l_croot_cleaf>1) %>%
+  summarise(number_of_records=n(),
+            percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
+            percentage_smaller_than_one = 1-percentage_larger_than_one)
+
+
+gg2 <- supernice_gdf %>% 
+  ggplot(aes(x = l_croot_cleaf, y = ..density..)) +
+  geom_density(fill = "grey70") +
+  theme_classic() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) + 
+      geom_text(data = Labels,aes(x=-Inf, y = Inf,label=percentage_smaller_than_one),hjust = -2, vjust= 1.5)+
+  geom_text(data = Labels,aes(x=Inf, y = Inf,label=percentage_larger_than_one),hjust = 3,vjust= 1.5)+
+  labs(
+    x = expression(paste(italic(L)[Croot/Cleaf]))
+  )
+
+cowplot::plot_grid(
+  gg1, 
+  gg2,
+  ncol = 2
+)
+
+ggsave(here("fig/dcleaf_dcroot_trendy_s1_pooled.pdf"), width = 8, height = 4)
+
+```
+
+
+#### All models seperately
+
+```{r}
+set.seed(1982)
+
+## all models separately (facet_grid)
+nice_gdf  <- gdf %>%
+  unnest(data) %>%
+  bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>% # smallest set here
+      unnest(data) %>%
+      mutate(modl = "ALL")
+  ) %>%
+  dplyr::filter(!is.nan(dCroot), !is.nan(dcleaf), !is.infinite(dCroot), !is.infinite(dcleaf)) %>%
+  mutate(l_croot_cleaf = dCroot/ dcleaf)%>%
+  filter(l_croot_cleaf<100000, l_croot_cleaf>-1000000) 
+
+
+nice_gdf %>%
+  ggplot(aes(x = dcleaf, y = dCroot)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    y = expression(paste(Delta, italic(C)[root], "/", italic(C)[root])),
+    x = expression(paste(Delta, italic(C)[leaf], "/", italic(C)[leaf]))
+  )+
+  facet_wrap(. ~ modl,  ncol = 3,  scales = "free") +
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, hjust = 0)
+    )
+
+
+ggsave(here("fig/dcleaf_dcroot_trendy_s1_bymodl.pdf"), width = 9, height = 10)
+
+
+
+## histograms by model
+
+
+# we need to get some stat for the overall excel table
+Quantile_result <- nice_gdf%>%
+  group_by(modl) %>%
+  summarise(l_croot_cleaf_50 = quantile(l_croot_cleaf,probs=0.5)) 
+summary_table <- left_join(summary_table,Quantile_result,by='modl')
+#openxlsx::write.xlsx(summary_table,file = here("fig/TRENDYV11_summarytable.xlsx"))
+# Lables for Histogram  
+Labels <- nice_gdf%>%
+  mutate(l_larger_than_one = l_croot_cleaf>1) %>%
+  group_by(modl) %>%
+  summarise(number_of_records=n(),
+            percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
+            percentage_smaller_than_one = 1-percentage_larger_than_one)
+
+
+nice_gdf %>%
+ggplot() +
+  geom_density(aes(x = l_croot_cveg, y = ..density..),fill = "grey70") +
+  theme_classic() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) +
+  geom_text(data = Labels,aes(x=-Inf, y = Inf,label=percentage_smaller_than_one),hjust = -2, vjust= 1.5)+
+  geom_text(data = Labels,aes(x=Inf, y = Inf,label=percentage_larger_than_one),hjust = 3,vjust= 1.5)+
+  labs(
+       x = expression(paste(italic(L)[Croot/Cveg]))
+  )+
+  facet_wrap(. ~ modl, ncol = 3,  scales = "free") 
+
+ggsave(here("fig/hist_dcleaf_dcroot_trendy_bymodl.pdf"), width = 9, height = 10.5)
 ```
 
