@@ -397,7 +397,7 @@ gdf <- gdf %>%
 summary_table <- as.data.frame(c('ALL','CLASSIC',
 'IBIS',
 'LPJ',
-'ORCHIDEE',
+'ORCHIDEEv3',
 'VISIT',
 'ISBA-CTRIP',
 'CABLE-POP',
@@ -411,7 +411,23 @@ summary_table <- as.data.frame(c('ALL','CLASSIC',
 'VISIT-NIES',
 'SDGVM'
 ))
-colnames(summary_table) <- 'modl' 
+colnames(summary_table) <- c('modl')
+summary_table$CN_coupled<-c(NA,'No',
+'No',
+'No',
+'Yes',
+'No',
+'No',
+'Yes',
+'Yes',
+'Yes',
+'Yes',
+'Yes',
+'Yes',
+'Yes',
+'Yes',
+'No',
+'Yes')
 load(here("data/gdf_Trendyv11_202406.rda"))
 
 ```
@@ -636,7 +652,7 @@ bymodel_map <- ggplot() +
     ylim = c(-60, 85),
     expand = FALSE
   ) +
-  khroma::scale_fill_berlin(
+  khroma::scale_fill_vik(
     name = "",
     limits = c(0,2), 
     midpoint = 1
@@ -665,7 +681,7 @@ ggplot() +
     ylim = c(-60, 85),
     expand = FALSE
   ) +
-  khroma::scale_fill_berlin(
+  khroma::scale_fill_vik(
     name = "",
     limits = c(0,2), 
     midpoint = 1
@@ -703,7 +719,7 @@ mean_map <- ggplot() +
     ylim = c(-60, 85),
     expand = FALSE
   ) +
-  khroma::scale_fill_berlin(
+  khroma::scale_fill_vik(
     name = "",
     limits = c(0.2,1.8),  
     midpoint = 1
@@ -728,7 +744,7 @@ sd_map <- ggplot() +
     ylim = c(-60, 85),
     expand = FALSE
   ) +
-  khroma::scale_fill_berlin(
+  khroma::scale_fill_vik(
     name = "",
     limits = c(0,0.8), 
     midpoint = 0.4
@@ -768,7 +784,7 @@ filter(modl==list_of_modl[i])%>%
       ylim = c(-60, 85),
       expand = FALSE
     ) +
-    khroma::scale_fill_berlin(
+    khroma::scale_fill_vik(
       name = "",
       limits = c(0,2), 
       midpoint = 1
@@ -973,7 +989,7 @@ bymodel_map <- ggplot() +
     ylim = c(-60, 85),
     expand = FALSE
   ) +
-  khroma::scale_fill_berlin(
+  khroma::scale_fill_vik(
     name = "",
     limits = c(0,2), 
     midpoint = 1
@@ -1002,7 +1018,7 @@ mean_map <- ggplot() +
       ylim = c(-60, 85),
       expand = FALSE
     ) +
-    khroma::scale_fill_berlin(
+    khroma::scale_fill_vik(
       name = "",
      limits = c(0.2,1.8),  
     midpoint = 1
@@ -1027,7 +1043,7 @@ sd_map <- ggplot() +
       ylim = c(-60, 85),
       expand = FALSE
     ) +
-    khroma::scale_fill_berlin(
+    khroma::scale_fill_vik(
       name = "",
     limits = c(0,0.8), 
     midpoint = 0.4
@@ -1169,7 +1185,7 @@ Quantile_result <- nice_gdf%>%
   group_by(modl) %>%
   summarise(l_croot_cveg_50 = quantile(l_croot_cveg,probs=0.5)) 
 summary_table <- left_join(summary_table,Quantile_result,by='modl')
-
+openxlsx::write.xlsx(summary_table,file = here("fig/TRENDYV11_summarytable.xlsx"))
 # Lables for Histogram  
 Labels <- nice_gdf%>%
   mutate(l_larger_than_one = l_croot_cveg>1) %>%
@@ -1234,7 +1250,7 @@ bymodel_map <- ggplot() +
     ylim = c(-60, 85),
     expand = FALSE
   ) +
-  khroma::scale_fill_berlin(
+  khroma::scale_fill_vik(
     name = "",
     limits = c(0,2), 
     midpoint = 1
@@ -1262,7 +1278,7 @@ mean_map <- ggplot() +
       ylim = c(-60, 85),
       expand = FALSE
     ) +
-    khroma::scale_fill_berlin(
+    khroma::scale_fill_vik(
       name = "",
     limits = c(0.2,1.8),  
     midpoint = 1
@@ -1287,7 +1303,7 @@ sd_map <- ggplot() +
       ylim = c(-60, 85),
       expand = FALSE
     ) +
-    khroma::scale_fill_berlin(
+    khroma::scale_fill_vik(
       name = "",
     limits = c(0,0.8), 
     midpoint = 0.4
