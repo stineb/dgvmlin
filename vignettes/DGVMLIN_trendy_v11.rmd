@@ -506,8 +506,6 @@ cowplot::plot_grid(
 )
 
 ggsave(here("fig/cveg_star_npp_trendy_pooled.pdf"), width = 8, height = 4)
-
-
 ```
 
 
@@ -875,15 +873,15 @@ havealook <- gdf %>% #Prepare the dataset, this is similar to the histogram abov
 
 
 havealook_spatial_map <- havealook%>%
-filter(!modl=='ALL') %>%
-  mutate(lon=floor(lon),lat=floor(lat)) %>%
-    mutate(l_npp_gpp=ifelse(l_npp_gpp>1.5,1.5,l_npp_gpp),
-         l_npp_gpp=ifelse(l_npp_gpp<0.6,0.6,l_npp_gpp)) %>%
-  group_by(lon,lat,modl) %>%
-  summarise(l_npp_gpp=median(l_npp_gpp)) %>%
+  filter(!modl=='ALL') %>%
+  # mutate(lon=floor(lon),lat=floor(lat)) %>%
+  #   mutate(l_npp_gpp=ifelse(l_npp_gpp>1.5,1.5,l_npp_gpp),
+  #        l_npp_gpp=ifelse(l_npp_gpp<0.6,0.6,l_npp_gpp)) %>%
+  # group_by(lon,lat,modl) %>%
+  # summarise(l_npp_gpp=median(l_npp_gpp)) %>%
   group_by(lon,lat) %>%
-   summarise(l_npp_gpp_sd=sd(l_npp_gpp),
-             l_npp_gpp=mean(l_npp_gpp))
+  summarise(l_npp_gpp_sd=sd(l_npp_gpp),
+            l_npp_gpp=mean(l_npp_gpp))
 
 
 mean_map <- ggplot() +
@@ -1098,14 +1096,14 @@ havealook <- gdf %>% #Prepare the dataset, this is similar to the histogram abov
 
 havealook_spatial_map <- havealook%>%
 filter(!modl=='ALL') %>%
-  mutate(lon=floor(lon),lat=floor(lat)) %>%
-    mutate(l_croot_cveg=ifelse(l_croot_cveg>2,2,l_croot_cveg),
-         l_croot_cveg=ifelse(l_croot_cveg<0,0,l_croot_cveg)) %>%
-  group_by(lon,lat,modl) %>%
-  summarise(l_croot_cveg=median(l_croot_cveg)) %>%
+  # mutate(lon=floor(lon),lat=floor(lat)) %>%
+  # mutate(l_croot_cveg=ifelse(l_croot_cveg>2,2,l_croot_cveg),
+  #        l_croot_cveg=ifelse(l_croot_cveg<0,0,l_croot_cveg)) %>%
+  # group_by(lon,lat,modl) %>%
+  # summarise(l_croot_cveg=median(l_croot_cveg)) %>%
   group_by(lon,lat) %>%
-   summarise(l_croot_cveg_sd=sd(l_croot_cveg),
-             l_croot_cveg=mean(l_croot_cveg))
+  summarise(l_croot_cveg_sd=sd(l_croot_cveg),
+            l_croot_cveg=mean(l_croot_cveg))
 
 
 mean_map <- ggplot() +
