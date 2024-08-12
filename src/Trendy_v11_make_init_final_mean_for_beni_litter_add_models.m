@@ -25,7 +25,7 @@ Model_list={'CABLE-POP';'CLASSIC';'CLM5.0';'DLEM';'ISAM';'IBIS';'LPX-Bern';'VISI
 Variable_list={'gpp','npp'};
 Variable_list={'cVeg'};
 Variable_list={'rh','cSoil','cVeg','gpp','npp','cLitter','cWood','cLeaf','cRoot'};
-Variable_list={'cRoot'};
+Variable_list={'cLeaf'};
 
 % VISIT don't have npp, we made it from gpp-ra
 % SDGVM land cover frac is too large to be read, I do it by cdo
@@ -124,7 +124,7 @@ for Variable_to_read_num=1:length(Variable_list)
             ncwrite(New_file_name,'lat',Lat);
             
             
-            nccreate(New_file_name,Variable_to_read,'Dimensions',{'lon',lon_num,'lat',lat_num},'Datatype','single');
+            nccreate(New_file_name,Variable_to_read,'Dimensions',{'lon',lon_num,'lat',lat_num},'Datatype','double');
             ncwrite(New_file_name,Variable_to_read,Csoil_before);
             ncwriteatt(New_file_name,Variable_to_read,'units','check TRENDYv11 S1 metadata');
             ncwriteatt(New_file_name,Variable_to_read,'Description','this is a mean value Average across the 24 25 26 27 28 29 30 31 32th years, CMIP5 esmfixclim1');
@@ -144,7 +144,7 @@ for Variable_to_read_num=1:length(Variable_list)
             nccreate(New_file_name,'lat','Dimensions',{'lat',lat_num},'Datatype','double')
             ncwrite(New_file_name,'lat',Lat);
             
-            nccreate(New_file_name,Variable_to_read,'Dimensions',{'lon',lon_num,'lat',lat_num},'Datatype','single');
+            nccreate(New_file_name,Variable_to_read,'Dimensions',{'lon',lon_num,'lat',lat_num},'Datatype','double');
             ncwrite(New_file_name,Variable_to_read,Csoil_After);
             ncwriteatt(New_file_name,Variable_to_read,'units','check TRENDYv11 S1 metadata');
             ncwriteatt(New_file_name,Variable_to_read,'Description','this is a mean value Average across the 74 75 76 77 78 79 80 81 82th years, CMIP5 esmfixclim1');
