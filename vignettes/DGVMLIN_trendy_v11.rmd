@@ -20,7 +20,6 @@ rm(list=ls())
 #setwd("~/E/RA/DGVM_density_plot/trendy_v9") #h
 #setwd('F:/Oxford/Chapter_four/dgvmlin')
 # If you only want to draw figures, only do this: load(here("data/gdf_Trendyv11_202406.rda")) 
-
 ```
 
 ## Approach
@@ -109,6 +108,7 @@ filnams <- read_csv( here("data-raw/filnams_trendy_v11_S1.csv" )) %>%
 
 modls <- filnams %>% 
   pull(modl)
+
 # This is a huge list of nc files that we will read
 df <- filnams %>% 
   
@@ -169,18 +169,10 @@ df <- filnams %>%
 
 ... into tidy data frame
 
-source("analyse_modobs2.R")
-source("LSD.heatscatter.R")
-source("read_nc_onefile.R")
-source("nc_to_df.R")
-source("df_to_grid.R")
-
 ```{r}
 source(here("R/collect_gdf_bymodl_HZ_Trendyv11.R"))
 source(here("R/nc_to_df.R"))
 source(here("R/read_nc_onefile.R"))
-here()
-getwd()
 
 gdf <- purrr::map(
 
@@ -226,8 +218,6 @@ gdf <- purrr::map(
   
   bind_rows() %>%
 
-
-
   group_by(modl) %>%
   nest()
 ```
@@ -236,8 +226,6 @@ gdf <- purrr::map(
 ## Calculate relationships
 
 ```{r}
-
-
 #           unit correction  and check data quality ~~~
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -270,8 +258,6 @@ model_no <- which(gdf$modl=="CLM5.0")
 model_df <- gdf$data[[model_no]]
 robustbase::colMedians(as.matrix(model_df))
 sum(!model_df$landCoverFrac==0)
-
-
 
 ### ISAM (no land cover change map)
 model_no <- which(gdf$modl=="ISAM")
@@ -308,7 +294,6 @@ model_df <- gdf$data[[model_no]]
 robustbase::colMedians(as.matrix(model_df))
 sum(!model_df$landCoverFrac==0)
 
-
 ### VISIT(no land cover change map)
 model_no <- which(gdf$modl=="VISIT")
 model_df <- gdf$data[[model_no]]
@@ -329,13 +314,10 @@ colMeans(as.matrix(model_df),na.rm = T) #strange medium, but mean ok,
 sum(!model_df$landCoverFrac==0)
 
 ### LPX-Bern (this one land cover frac change)
-
 model_no <- which(gdf$modl=="LPX-Bern")
 model_df <- gdf$data[[model_no]]
 robustbase::colMedians(as.matrix(model_df),na.rm = T)
 sum(!model_df$landCoverFrac==0)
-
-
 
 ### SDGVM(no land cover change map)
 model_no <- which(gdf$modl=="SDGVM")
@@ -357,12 +339,12 @@ get_csoil_star <- function(df){
 
 get_deltas <- function(df){
   df %>%
-      ## get aboveground biomass as sum of cWood and cLeaf
-  mutate(cveg_ag_init = cleaf_init + cwood_init,
-         cveg_ag_final = cleaf_final + cwood_final,
-         csoil_final=csoil_final + cLitter_final,
-         csoil_init=csoil_init + cLitter_init
-         ) %>%
+    ## get aboveground biomass as sum of cWood and cLeaf
+    mutate(cveg_ag_init = cleaf_init + cwood_init,
+           cveg_ag_final = cleaf_final + cwood_final,
+           csoil_final=csoil_final + cLitter_final,
+           csoil_init=csoil_init + cLitter_init
+           ) %>%
     mutate(dcveg = (cveg_final - cveg_init)/cveg_init,
            dcveg_ag = (cveg_ag_final - cveg_ag_init)/cveg_ag_init,
            dnpp = (npp_final - npp_init)/npp_init,
@@ -380,8 +362,6 @@ get_deltas <- function(df){
            l_cveg_star_npp = dcveg_star / dnpp)
 }
 
-
-
 Land_cover_no_change <- function(df){
   df %>%
     filter(landCoverFrac==0)
@@ -394,48 +374,54 @@ gdf <- gdf %>%
 
 #save(gdf,file=here("data/gdf_Trendyv11_202407.rda"))
 
-summary_table <- as.data.frame(c('ALL','CLASSIC',
-'IBIS',
-'LPJ',
-'ORCHIDEEv3',
-'VISIT',
-'ISBA-CTRIP',
-'CABLE-POP',
-'CLM5.0',
-'DLEM',
-'ISAM',
-'JSBACH',
-'JULES',
-'LPJ-GUESS',
-'LPX-Bern',
-'VISIT-NIES',
-'SDGVM'
-))
-colnames(summary_table) <- c('modl')
-summary_table$CN_coupled<-c(NA,'No',
-'No',
-'No',
-'Yes',
-'No',
-'No',
-'Yes',
-'Yes',
-'Yes',
-'Yes',
-'Yes',
-'Yes',
-'Yes',
-'Yes',
-'No',
-'Yes')
-load(here("data/gdf_Trendyv11_202407.rda"))
+summary_table <- as.data.frame(
+  c(
+    'ALL',
+    'CLASSIC',
+    'IBIS',
+    'LPJ',
+    'ORCHIDEEv3',
+    'VISIT',
+    'ISBA-CTRIP',
+    'CABLE-POP',
+    'CLM5.0',
+    'DLEM',
+    'ISAM',
+    'JSBACH',
+    'JULES',
+    'LPJ-GUESS',
+    'LPX-Bern',
+    'VISIT-NIES',
+    'SDGVM'
+    ))
 
+colnames(summary_table) <- c('modl')
+
+summary_table$CN_coupled <- c(
+  NA,
+  'No',
+  'No',
+  'No',
+  'Yes',
+  'No',
+  'No',
+  'Yes',
+  'Yes',
+  'Yes',
+  'Yes',
+  'Yes',
+  'Yes',
+  'Yes',
+  'Yes',
+  'No',
+  'Yes'
+  )
+
+load(here("data/gdf_Trendyv11_202407.rda"))
 ```
 
 
 Run Some tests. and correct data if unit is wrong 
-
-
 
 ```{r}
 
@@ -452,12 +438,13 @@ gdf$data[[1]]$dgpp %>% quantile(., probs = c(0.1, 0.5, 0.9), na.rm=T)
 
 # Plot relationships
 
+Preparations.
 ```{r}
-
 get_p_value <- function(x, na.rm=TRUE) {
   p.value <- t.test(x, mu = 1)$p.value
   p.value
 }
+
 # sample for even representation, number determined by model with smallest 
 # number of gridcells
 nsample <- gdf %>% 
@@ -465,24 +452,270 @@ nsample <- gdf %>%
   pull(len) %>% 
   min()
 
-
 coast <- rnaturalearth::ne_coastline(
   scale = 110, 
   returnclass = "sf"
   )
+```
 
+
+### GPP vs NPP 
+
+#### All models pooled
+
+```{r}
+gg1 <- gdf %>%
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
+  unnest(data) %>%
+  dplyr::filter(!is.nan(dnpp), !is.nan(dgpp), !is.infinite(dnpp), !is.infinite(dgpp)) %>%
+  ggplot(aes(x = dgpp, y = dnpp)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, "GPP/GPP")),
+    y = expression(paste(Delta, "NPP/NPP"))
+  )
+
+supernice_gdf <- gdf %>%
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
+  unnest(data)%>%
+   dplyr::filter(!is.nan(dnpp), !is.nan(dgpp), !is.infinite(dnpp), !is.infinite(dgpp)) %>%
+  filter(l_npp_gpp<100000, l_npp_gpp>-1000000) 
+
+# Lables for Histogram  
+Labels <- supernice_gdf %>%
+  ungroup()%>%
+  mutate(l_larger_than_one = l_npp_gpp>1) %>%
+  summarise(number_of_records=n(),
+            percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
+            percentage_smaller_than_one = 1-percentage_larger_than_one)
+
+gg2 <- supernice_gdf %>% 
+  ggplot(aes(x = l_npp_gpp, y = ..density..)) +
+  geom_density(fill = "grey70") +
+  theme_classic() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) + 
+      geom_text(data = Labels,aes(x=-Inf, y = Inf,label=percentage_smaller_than_one),hjust = -2, vjust= 1.5)+
+  geom_text(data = Labels,aes(x=Inf, y = Inf,label=percentage_larger_than_one),hjust = 3,vjust= 1.5)+
+  labs(
+    x = expression(paste(italic(L)[NPP/GPP]))
+  )
+
+cowplot::plot_grid(
+  gg1, 
+  gg2,
+  ncol = 2
+)
+
+ggsave(here("fig/dgpp_dnpp_trendy_s1_pooled.pdf"), width = 8, height = 4)
 
 ```
 
+#### By model
+
+```{r}
+nice_gdf  <- gdf %>%
+  unnest(data) %>%
+  bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
+      unnest(data) %>%
+      mutate(modl = "ALL")
+  ) %>%
+  dplyr::filter(dnpp < 2.5 & dnpp > -1.5 & dgpp < 2.5 & dgpp > -1.5) %>%
+  dplyr::filter(!is.nan(dnpp), !is.nan(dgpp), !is.infinite(dnpp), !is.infinite(dgpp)) %>% 
+  filter(l_npp_gpp<100000, l_npp_gpp>-1000000)
+
+nice_gdf %>%
+  ggplot(aes(x = dgpp, y = dnpp)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, "GPP/GPP")),
+    y = expression(paste(Delta, "NPP/NPP"))
+  ) +
+  facet_wrap(. ~ modl,  ncol = 3,  scales = "free") +
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, hjust = 0)
+    )
+
+ggsave(here("fig/dnpp_dgpp_trendy_s1_bymodl.pdf"), width = 9, height = 13)
+
+# we need to get some stat for the overall excel table
+Quantile_result <- nice_gdf %>%
+  group_by(modl) %>%
+  summarise(l_npp_gpp_50 = quantile(l_npp_gpp,probs=0.5)) 
+summary_table <- left_join(summary_table,Quantile_result,by='modl')
+
+# Lables for Histogram  
+Labels <- nice_gdf %>%
+  mutate(l_larger_than_one = l_npp_gpp>1) %>%
+  group_by(modl) %>%
+  summarise(number_of_records=n(),
+            percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
+            percentage_smaller_than_one = 1-percentage_larger_than_one)
+
+nice_gdf %>%
+  ggplot() +
+  geom_density(aes(x = l_npp_gpp, y = ..density..),fill = "grey70") +
+  theme_classic() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) +
+  geom_text(data = Labels,aes(x=-Inf, y = Inf,label=percentage_smaller_than_one),hjust = -2, vjust= 1.5)+
+  geom_text(data = Labels,aes(x=Inf, y = Inf,label=percentage_larger_than_one),hjust = 3,vjust= 1.5)+
+  labs(
+       x = expression(paste(italic(L)[NPP/GPP]))
+  )+
+  facet_wrap(. ~ modl, ncol = 3,  scales = "free") 
+
+ggsave(here("fig/hist_dnpp_dgpp_trendy_bymodl.pdf"), width = 9, height = 10.5)
+
+```
+
+
+#### Spatial maps
+
+```{r}
+havealook <- gdf %>% #Prepare the dataset, this is similar to the histogram above
+  unnest(data) %>%
+  dplyr::filter(!is.nan(dgpp), !is.nan(dnpp), !is.infinite(dgpp), !is.infinite(dnpp)) %>%
+  mutate(l_npp_gpp = dnpp / dgpp) %>%
+  filter(l_npp_gpp>-1 & l_npp_gpp<3) %>%
+  mutate(lon=ifelse(lon>180, lon-360, lon)) #some maps have longitude from 0 to 360, need to convert to -180 to 180
+
+
+havealook_spatial_map <- havealook %>%
+  ungroup() |> 
+  filter(!modl=='ALL') %>%
+  # mutate(lon=floor(lon),lat=floor(lat)) %>%
+  #   mutate(l_npp_gpp=ifelse(l_npp_gpp>1.5,1.5,l_npp_gpp),
+  #        l_npp_gpp=ifelse(l_npp_gpp<0.6,0.6,l_npp_gpp)) %>%
+  # group_by(lon,lat,modl) %>%
+  # summarise(l_npp_gpp=median(l_npp_gpp)) %>%
+  group_by(lon, lat) %>%
+  summarise(l_npp_gpp_sd = sd(l_npp_gpp),
+            l_npp_gpp = mean(l_npp_gpp))
+
+bymodel_map <- ggplot() +
+  geom_raster(
+    data = havealook,
+    aes(x = lon, y = lat, fill = l_npp_gpp),
+    show.legend = TRUE
+    ) +
+  geom_sf(
+    data = coast,
+    colour = 'black',
+    linewidth = 0.3
+  )  +
+  coord_sf(
+    ylim = c(-60, 85),
+    expand = FALSE
+  ) +
+  khroma::scale_fill_vik(
+    name = "",
+    limits = c(0,2), 
+    midpoint = 1
+    ) +
+  theme_void() +
+  labs(
+    title = expression(paste(italic(L)[NPP/GPP])) 
+  ) +
+  facet_wrap(. ~ modl, ncol = 3)
+
+ggsave(
+  bymodel_map, 
+  filename = here("fig/Spatial_MAP_dnpp_dgpp_trendyv11_bymodel.pdf"),
+  height=10, 
+  width = 10
+  )
+
+# XXX code crashes here
+mean_map <- ggplot() +
+  geom_raster(
+    data = havealook_spatial_map,
+    aes(x = lon, y = lat, fill = l_npp_gpp),
+    show.legend = TRUE
+    ) +
+  geom_sf(
+    data = coast,
+    colour = 'black',
+    linewidth = 0.3
+  )  +
+  coord_sf(
+    ylim = c(-60, 85),
+    expand = FALSE
+  ) +
+  khroma::scale_fill_vik(
+    name = "",
+    limits = c(0.2,1.8),  
+    midpoint = 1
+    ) +
+  theme_void() +
+  labs(
+    title = expression(paste(italic(L)[NPP/GPP],'  as Mean across models')) 
+  )
+
+sd_map <- ggplot() +
+  geom_raster(
+    data = havealook_spatial_map,
+    aes(x = lon, y = lat, fill = l_npp_gpp_sd),
+    show.legend = TRUE
+    ) +
+  geom_sf(
+    data = coast,
+    colour = 'black',
+    linewidth = 0.3
+  )  +
+  coord_sf(
+    ylim = c(-60, 85),
+    expand = FALSE
+  ) +
+  khroma::scale_fill_vik(
+    name = "",
+  limits = c(0,0.8), 
+  midpoint = 0.4
+    ) +
+  theme_void() +
+  labs(
+    title = expression(paste(italic(L)[NPP/GPP],'  as SD across models')) 
+  )
+
+cowplot::plot_grid(
+  mean_map, 
+  sd_map,
+  nrow = 2
+)
+
+## XXX code gets stuck here
+ggsave(filename = here("fig/Spatial_MAP_dgpp_dnpp_trendyv11.pdf"),height=4, width = 9)
+```
 
 ### Cveg vs NPP 
 
 #### All models pooled
 
-
 ```{r}
-
-# all models pooled
 gg1 <- gdf %>%
   mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
   unnest(data) %>%
@@ -502,16 +735,14 @@ gg1 <- gdf %>%
   )
 
 
-supernice_gdf<-gdf %>%
+supernice_gdf <- gdf %>%
   mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
   unnest(data)%>%
   dplyr::filter(!is.nan(dnpp), !is.nan(dcveg_star), !is.infinite(dnpp), !is.infinite(dcveg_star)) %>% 
   filter(l_cveg_star_npp<100000, l_cveg_star_npp>-1000000) 
 
-
-
 # Lables for Histogram  
-Labels <- supernice_gdf%>%
+Labels <- supernice_gdf %>%
   ungroup()%>%
   mutate(l_larger_than_one = l_cveg_star_npp>1) %>%
   summarise(number_of_records=n(),
@@ -539,8 +770,6 @@ cowplot::plot_grid(
 )
 
 ggsave(here("fig/cveg_star_npp_trendy_pooled.pdf"), width = 8, height = 4)
-
-
 ```
 
 
@@ -585,22 +814,22 @@ ggsave(here("fig/dnpp_dvegc_trendy_s1_bymodl.pdf"), width = 9, height = 13)
 
 
 # we need to get some stat for the overall excel table
-Quantile_result <- nice_gdf%>%
+Quantile_result <- nice_gdf %>%
   group_by(modl) %>%
   summarise(l_cveg_star_npp_50 = quantile(l_cveg_star_npp,probs=0.5)) 
+
 summary_table <- left_join(summary_table,Quantile_result,by='modl')
 
 # Lables for Histogram  
-Labels <- nice_gdf%>%
+Labels <- nice_gdf %>%
   mutate(l_larger_than_one = l_cveg_star_npp>1) %>%
   group_by(modl) %>%
   summarise(number_of_records=n(),
             percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
             percentage_smaller_than_one = 1-percentage_larger_than_one)
 
-
 nice_gdf %>%
-ggplot() +
+  ggplot() +
   geom_density(aes(x = l_cveg_star_npp, y = ..density..),fill = "grey70") +
   theme_classic() +
   geom_hline(yintercept = 0, linetype = "dotted") +
@@ -615,9 +844,8 @@ ggplot() +
   facet_wrap(. ~ modl, ncol = 3,  scales = "free") 
 
 ggsave(here("fig/hist_dcveg_dnpp_trendy_bymodl.pdf"), width = 9, height = 10.5)
-
-
 ```
+
 
 #### Spatial map
 
@@ -693,9 +921,8 @@ ggplot() +
 ggsave(bymodel_map,filename = here("fig/Spatial_MAP_dcveg_dnpp_trendyv11_bymodel.pdf"),height=10, width = 10)
 
 # All pooled
-
 havealook_spatial_map <- havealook%>%
-    mutate(lon=floor(lon/2)*2,lat=floor(lat/2)*2) %>%
+   mutate(lon=floor(lon/2)*2,lat=floor(lat/2)*2) %>%
    mutate(l_cveg_star_npp = ifelse(l_cveg_star_npp>2,2,l_cveg_star_npp),
            l_cveg_star_npp = ifelse(l_cveg_star_npp<0.2,0.2,l_cveg_star_npp)) %>%
     group_by(lon, lat, modl) %>%
@@ -764,12 +991,13 @@ ggsave(filename = here("fig/Spatial_MAP_dcveg_dnpp_trendyv11.pdf"),height=4, wid
 
 list_of_modl<-unique(havealook$modl)
 bymodel_map<-list()
-for (i in 1:length(list_of_modl)) {
+for (i in 1:length(list_of_modl)){
   havealook_spatial_map<-havealook%>%
-filter(modl==list_of_modl[i])%>%
+  filter(modl==list_of_modl[i])%>%
   mutate(l_cveg_star_npp=ifelse(l_cveg_star_npp>2,2,l_cveg_star_npp),
          l_cveg_star_npp=ifelse(l_cveg_star_npp<0.2,0.2,l_cveg_star_npp))
-  mean_map<-ggplot() +
+  
+  mean_map <- ggplot() +
 	  geom_raster(
 	    data = havealook_spatial_map,
 	    aes(x = lon, y = lat, fill = l_cveg_star_npp),
@@ -805,270 +1033,12 @@ cowplot::plot_grid(
 
 ```
 
-### GPP vs NPP 
-
-#### All models pooled
-
-
-```{r}
-
-# all models pooled
-gg1 <- gdf %>%
-  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
-  unnest(data) %>%
-  dplyr::filter(!is.nan(dnpp), !is.nan(dgpp), !is.infinite(dnpp), !is.infinite(dgpp)) %>%
-  ggplot(aes(x = dgpp, y = dnpp)) +
-  geom_hex(bins = 50, show.legend = FALSE) +
-  theme_classic() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
-  geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 0, linetype = "dotted") +
-  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
-  xlim(-1, 2) + 
-  ylim(-1, 2) +
-  labs(
-    x = expression(paste(Delta, "GPP/GPP")),
-    y = expression(paste(Delta, "NPP/NPP"))
-  )
-
-
-
-supernice_gdf<-gdf %>%
-  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
-  unnest(data)%>%
-   dplyr::filter(!is.nan(dnpp), !is.nan(dgpp), !is.infinite(dnpp), !is.infinite(dgpp)) %>%
-  filter(l_npp_gpp<100000, l_npp_gpp>-1000000) 
-
-
-
-# Lables for Histogram  
-Labels <- supernice_gdf%>%
-  ungroup()%>%
-  mutate(l_larger_than_one = l_npp_gpp>1) %>%
-  summarise(number_of_records=n(),
-            percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
-            percentage_smaller_than_one = 1-percentage_larger_than_one)
-
-
-
-gg2 <- supernice_gdf %>% 
-  ggplot(aes(x = l_npp_gpp, y = ..density..)) +
-  geom_density(fill = "grey70") +
-  theme_classic() +
-  geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 1, linetype = "dotted") +
-  xlim(-1, 2.5) + 
-      geom_text(data = Labels,aes(x=-Inf, y = Inf,label=percentage_smaller_than_one),hjust = -2, vjust= 1.5)+
-  geom_text(data = Labels,aes(x=Inf, y = Inf,label=percentage_larger_than_one),hjust = 3,vjust= 1.5)+
-  labs(
-    x = expression(paste(italic(L)[NPP/GPP]))
-  )
-
-cowplot::plot_grid(
-  gg1, 
-  gg2,
-  ncol = 2
-)
-
-ggsave(here("fig/dgpp_dnpp_trendy_s1_pooled.pdf"), width = 8, height = 4)
-
-```
-
-#### By model
-
-```{r}
-nice_gdf  <- gdf %>%
-  unnest(data) %>%
-  bind_rows(
-    .,
-    gdf %>%
-      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
-      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
-      unnest(data) %>%
-      mutate(modl = "ALL")
-  ) %>%
-  dplyr::filter(dnpp < 2.5 & dnpp > -1.5 & dgpp < 2.5 & dgpp > -1.5) %>%
-  dplyr::filter(!is.nan(dnpp), !is.nan(dgpp), !is.infinite(dnpp), !is.infinite(dgpp)) %>% 
-  filter(l_npp_gpp<100000, l_npp_gpp>-1000000)
-
-nice_gdf %>%
-  ggplot(aes(x = dgpp, y = dnpp)) +
-  geom_hex(bins = 50, show.legend = FALSE) +
-  theme_classic() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
-  geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 0, linetype = "dotted") +
-  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
-  xlim(-1, 2) + 
-  ylim(-1, 2) +
-  labs(
-    x = expression(paste(Delta, "GPP/GPP")),
-    y = expression(paste(Delta, "NPP/NPP"))
-  ) +
-  facet_wrap(. ~ modl,  ncol = 3,  scales = "free") +
-  theme(
-    legend.position = "none",
-    strip.background = element_blank(),
-    strip.text = element_text(size = 12, hjust = 0)
-    )
-
-ggsave(here("fig/dnpp_dgpp_trendy_s1_bymodl.pdf"), width = 9, height = 13)
-
-
-# we need to get some stat for the overall excel table
-Quantile_result <- nice_gdf%>%
-  group_by(modl) %>%
-  summarise(l_npp_gpp_50 = quantile(l_npp_gpp,probs=0.5)) 
-summary_table <- left_join(summary_table,Quantile_result,by='modl')
-
-# Lables for Histogram  
-Labels <- nice_gdf%>%
-  mutate(l_larger_than_one = l_npp_gpp>1) %>%
-  group_by(modl) %>%
-  summarise(number_of_records=n(),
-            percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
-            percentage_smaller_than_one = 1-percentage_larger_than_one)
-
-
-nice_gdf %>%
-ggplot() +
-  geom_density(aes(x = l_npp_gpp, y = ..density..),fill = "grey70") +
-  theme_classic() +
-  geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 0, linetype = "dotted") +
-  geom_vline(xintercept = 1, linetype = "dotted") +
-  xlim(-1, 2.5) +
-  geom_text(data = Labels,aes(x=-Inf, y = Inf,label=percentage_smaller_than_one),hjust = -2, vjust= 1.5)+
-  geom_text(data = Labels,aes(x=Inf, y = Inf,label=percentage_larger_than_one),hjust = 3,vjust= 1.5)+
-  labs(
-       x = expression(paste(italic(L)[NPP/GPP]))
-  )+
-  facet_wrap(. ~ modl, ncol = 3,  scales = "free") 
-
-ggsave(here("fig/hist_dnpp_dgpp_trendy_bymodl.pdf"), width = 9, height = 10.5)
-
-```
-
-
-#### Spatial maps
-
-```{r}
-
-havealook <- gdf %>% #Prepare the dataset, this is similar to the histogram above
-  unnest(data) %>%
-  dplyr::filter(!is.nan(dgpp), !is.nan(dnpp), !is.infinite(dgpp), !is.infinite(dnpp)) %>%
-  mutate(l_npp_gpp = dnpp / dgpp) %>%
-  filter(l_npp_gpp>-1 & l_npp_gpp<3) %>%
-  mutate(lon=ifelse(lon>180,lon-360,lon)) #some maps have longitude from 0 to 360, need to convert to -180 to 180
-
-
-havealook_spatial_map <- havealook%>%
-filter(!modl=='ALL') %>%
-  mutate(lon=floor(lon/2)*2,lat=floor(lat/2)*2) %>%
-    mutate(l_npp_gpp=ifelse(l_npp_gpp>1.5,1.5,l_npp_gpp),
-         l_npp_gpp=ifelse(l_npp_gpp<0.6,0.6,l_npp_gpp)) %>%
-  group_by(lon,lat,modl) %>%
-  summarise(l_npp_gpp=median(l_npp_gpp)) %>%
-  group_by(lon,lat) %>%
-   summarise(l_npp_gpp_sd=sd(l_npp_gpp),
-             l_npp_gpp=mean(l_npp_gpp))
-
-bymodel_map <- ggplot() +
-  geom_raster(
-    data = havealook,
-    aes(x = lon, y = lat, fill = l_npp_gpp),
-    show.legend = TRUE
-    ) +
-  geom_sf(
-    data = coast,
-    colour = 'black',
-    linewidth = 0.3
-  )  +
-  coord_sf(
-    ylim = c(-60, 85),
-    expand = FALSE
-  ) +
-  khroma::scale_fill_vik(
-    name = "",
-    limits = c(0,2), 
-    midpoint = 1
-    ) +
-  theme_void() +
-  labs(
-    title = expression(paste(italic(L)[Cveg^"*"/NPP])) 
-  ) +
-  facet_wrap(. ~ modl, ncol = 3)
-
-ggsave(bymodel_map,filename = here("fig/Spatial_MAP_dnpp_dgpp_trendyv11_bymodel.pdf"),height=10, width = 10)
-
-
-mean_map <- ggplot() +
-	  geom_raster(
-	    data = havealook_spatial_map,
-	    aes(x = lon, y = lat, fill = l_npp_gpp),
-	    show.legend = TRUE
-	    ) +
-    geom_sf(
-      data = coast,
-      colour = 'black',
-      linewidth = 0.3
-    )  +
-    coord_sf(
-      ylim = c(-60, 85),
-      expand = FALSE
-    ) +
-    khroma::scale_fill_vik(
-      name = "",
-     limits = c(0.2,1.8),  
-    midpoint = 1
-      ) +
-    theme_void() +
-    labs(
-      title = expression(paste(italic(L)[NPP/GPP],'  as Mean across models')) 
-    )
-
-sd_map <- ggplot() +
-	  geom_raster(
-	    data = havealook_spatial_map,
-	    aes(x = lon, y = lat, fill = l_npp_gpp_sd),
-	    show.legend = TRUE
-	    ) +
-    geom_sf(
-      data = coast,
-      colour = 'black',
-      linewidth = 0.3
-    )  +
-    coord_sf(
-      ylim = c(-60, 85),
-      expand = FALSE
-    ) +
-    khroma::scale_fill_vik(
-      name = "",
-    limits = c(0,0.8), 
-    midpoint = 0.4
-      ) +
-    theme_void() +
-    labs(
-      title = expression(paste(italic(L)[NPP/GPP],'  as SD across models')) 
-    )
-
-cowplot::plot_grid(
-  mean_map, 
-  sd_map,
-  nrow = 2
-)
-
-ggsave(filename = here("fig/Spatial_MAP_dgpp_dnpp_trendyv11.pdf"),height=4, width = 9)
-```
 
 ### cVeg -> cRoot 
 
 #### All models pooled
 
 ```{r}
-
-# all models pooled
 gg1 <- gdf %>%
   mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
   unnest(data) %>%
@@ -1087,22 +1057,19 @@ gg1 <- gdf %>%
     x = expression(paste(Delta, italic(C)[veg], "/", italic(C)[veg]))
   )
 
-supernice_gdf<-gdf %>%
+supernice_gdf <- gdf %>%
   mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
   unnest(data)%>%
    dplyr::filter(!is.nan(dCroot), !is.nan(dcveg), !is.infinite(dCroot), !is.infinite(dcveg)) %>%
   filter(l_croot_cveg<100000, l_croot_cveg>-1000000) 
 
-
-
 # Lables for Histogram  
-Labels <- supernice_gdf%>%
+Labels <- supernice_gdf %>%
   ungroup()%>%
   mutate(l_larger_than_one = l_croot_cveg>1) %>%
   summarise(number_of_records=n(),
             percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
             percentage_smaller_than_one = 1-percentage_larger_than_one)
-
 
 gg2 <- gdf %>%
   mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
@@ -1127,7 +1094,6 @@ cowplot::plot_grid(
 )
 
 ggsave(here("fig/dcveg_dcroot_trendy_s1_pooled.pdf"), width = 8, height = 4)
-
 ```
 
 
@@ -1150,7 +1116,6 @@ nice_gdf  <- gdf %>%
   dplyr::filter(!is.nan(dCroot), !is.nan(dcveg), !is.infinite(dCroot), !is.infinite(dcveg)) %>%
   filter(l_croot_cveg<100000, l_croot_cveg>-1000000) # to remove NA and infinite
 
-
 nice_gdf %>%
   ggplot(aes(x = dcveg, y = dCroot)) +
   geom_hex(bins = 50, show.legend = FALSE) +
@@ -1172,42 +1137,49 @@ nice_gdf %>%
     strip.text = element_text(size = 12, hjust = 0)
     )
 
-
 ggsave(here("fig/dcveg_dcroot_trendy_s1_bymodl.pdf"), width = 9, height = 10)
 
-
-
 ## histograms by model
-
-
 # we need to get some stat for the overall excel table
-Quantile_result <- nice_gdf%>%
+Quantile_result <- nice_gdf %>%
   group_by(modl) %>%
-  summarise(l_croot_cveg_50 = quantile(l_croot_cveg,probs=0.5)) 
-summary_table <- left_join(summary_table,Quantile_result,by='modl')
-openxlsx::write.xlsx(summary_table,file = here("fig/TRENDYV11_summarytable.xlsx"))
+  summarise(l_croot_cveg_50 = quantile(l_croot_cveg, probs=0.5)) 
+
+summary_table <- left_join(summary_table, Quantile_result, by='modl')
+openxlsx::write.xlsx(summary_table, file = here("fig/TRENDYV11_summarytable.xlsx"))
+
 # Lables for Histogram  
-Labels <- nice_gdf%>%
+Labels <- nice_gdf %>%
   mutate(l_larger_than_one = l_croot_cveg>1) %>%
   group_by(modl) %>%
-  summarise(number_of_records=n(),
-            percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
-            percentage_smaller_than_one = 1-percentage_larger_than_one)
-
+  summarise(
+    number_of_records=n(),
+    percentage_larger_than_one = round(sum(l_larger_than_one)/number_of_records,digits =2),
+    percentage_smaller_than_one = 1-percentage_larger_than_one)
 
 nice_gdf %>%
-ggplot() +
-  geom_density(aes(x = l_croot_cveg, y = ..density..),fill = "grey70") +
+  ggplot() +
+  geom_density(aes(x = l_croot_cveg, y = ..density..), fill = "grey70") +
   theme_classic() +
   geom_hline(yintercept = 0, linetype = "dotted") +
   geom_vline(xintercept = 0, linetype = "dotted") +
   geom_vline(xintercept = 1, linetype = "dotted") +
   xlim(-1, 2.5) +
-  geom_text(data = Labels,aes(x=-Inf, y = Inf,label=percentage_smaller_than_one),hjust = -2, vjust= 1.5)+
-  geom_text(data = Labels,aes(x=Inf, y = Inf,label=percentage_larger_than_one),hjust = 3,vjust= 1.5)+
+  geom_text(
+    data = Labels,
+    aes(x=-Inf, y = Inf, label=percentage_smaller_than_one),
+    hjust = -2, 
+    vjust= 1.5 
+    ) +
+  geom_text(
+    data = Labels,
+    aes(x=Inf, y = Inf, label=percentage_larger_than_one),
+    hjust = 3,
+    vjust= 1.5
+    )+
   labs(
-       x = expression(paste(italic(L)[Croot/Cveg]))
-  )+
+    x = expression(paste(italic(L)[Croot/Cveg]))
+  ) +
   facet_wrap(. ~ modl, ncol = 3,  scales = "free") 
 
 ggsave(here("fig/hist_dcveg_dcroot_trendy_bymodl.pdf"), width = 9, height = 10.5)
@@ -1216,24 +1188,22 @@ ggsave(here("fig/hist_dcveg_dcroot_trendy_bymodl.pdf"), width = 9, height = 10.5
 #### Spatial maps
 
 ```{r}
-
 havealook <- gdf %>% #Prepare the dataset, this is similar to the histogram above
   unnest(data)  %>%
   dplyr::filter(!is.nan(dCroot), !is.nan(dcveg), !is.infinite(dCroot), !is.infinite(dcveg)) %>%
   filter(l_croot_cveg<100000, l_croot_cveg>-1000000) %>% # to remove NA and infinite
   mutate(lon=ifelse(lon>180,lon-360,lon)) #some maps have longitude from 0 to 360, need to convert to -180 to 180
 
-
-havealook_spatial_map <- havealook%>%
-filter(!modl=='ALL') %>%
-  mutate(lon=floor(lon/2)*2,lat=floor(lat/2)*2) %>%
-    mutate(l_croot_cveg=ifelse(l_croot_cveg>2,2,l_croot_cveg),
-         l_croot_cveg=ifelse(l_croot_cveg<0,0,l_croot_cveg)) %>%
-  group_by(lon,lat,modl) %>%
-  summarise(l_croot_cveg=median(l_croot_cveg)) %>%
+havealook_spatial_map <- havealook %>%
+  filter(!modl=='ALL') %>%
+  # mutate(lon=floor(lon),lat=floor(lat)) %>%
+  # mutate(l_croot_cveg=ifelse(l_croot_cveg>2,2,l_croot_cveg),
+  #        l_croot_cveg=ifelse(l_croot_cveg<0,0,l_croot_cveg)) %>%
+  # group_by(lon,lat,modl) %>%
+  # summarise(l_croot_cveg=median(l_croot_cveg)) %>%
   group_by(lon,lat) %>%
-   summarise(l_croot_cveg_sd=sd(l_croot_cveg),
-             l_croot_cveg=mean(l_croot_cveg))
+  summarise(l_croot_cveg_sd=sd(l_croot_cveg),
+            l_croot_cveg=mean(l_croot_cveg))
 
 bymodel_map <- ggplot() +
   geom_raster(
@@ -1261,32 +1231,37 @@ bymodel_map <- ggplot() +
   ) +
   facet_wrap(. ~ modl, ncol = 3)
 
-ggsave(bymodel_map,filename = here("fig/Spatial_MAP_dcroot_dcveg_trendyv11_bymodel.pdf"),height=10, width = 10)
+ggsave(
+  bymodel_map,
+  filename = here("fig/Spatial_MAP_dcroot_dcveg_trendyv11_bymodel.pdf"),
+  height=10, 
+  width = 10
+  )
 
 mean_map <- ggplot() +
-	  geom_raster(
-	    data = havealook_spatial_map,
-	    aes(x = lon, y = lat, fill = l_croot_cveg),
-	    show.legend = TRUE
-	    ) +
-    geom_sf(
-      data = coast,
-      colour = 'black',
-      linewidth = 0.3
-    )  +
-    coord_sf(
-      ylim = c(-60, 85),
-      expand = FALSE
+  geom_raster(
+    data = havealook_spatial_map,
+    aes(x = lon, y = lat, fill = l_croot_cveg),
+    show.legend = TRUE
     ) +
-    khroma::scale_fill_vik(
-      name = "",
-    limits = c(0.2,1.8),  
-    midpoint = 1
-      ) +
-    theme_void() +
-    labs(
-      title = expression(paste(italic(L)[Croot/Cveg],'  as Mean across models')) 
-    )
+  geom_sf(
+    data = coast,
+    colour = 'black',
+    linewidth = 0.3
+  )  +
+  coord_sf(
+    ylim = c(-60, 85),
+    expand = FALSE
+  ) +
+  khroma::scale_fill_vik(
+    name = "",
+  limits = c(0.2,1.8),  
+  midpoint = 1
+    ) +
+  theme_void() +
+  labs(
+    title = expression(paste(italic(L)[Croot/Cveg],'  as Mean across models')) 
+  )
 
 sd_map <- ggplot() +
 	  geom_raster(
@@ -1319,7 +1294,11 @@ cowplot::plot_grid(
   nrow = 2
 )
 
-ggsave(filename = here("fig/Spatial_MAP_dcveg_dcroot_trendyv11.pdf"),height=4, width = 9)
+ggsave(
+  filename = here("fig/Spatial_MAP_dcveg_dcroot_trendyv11.pdf"),
+  height=4, 
+  width = 9
+  )
 ```
 
 
@@ -1348,7 +1327,7 @@ gg1 <- gdf %>%
     x = expression(paste(Delta, italic(C)[leaf], "/", italic(C)[leaf]))
   )
 
-supernice_gdf<-gdf %>%
+supernice_gdf <- gdf %>%
   mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) %>%
   unnest(data)%>%
   dplyr::filter(!is.nan(dCroot), !is.nan(dcleaf), !is.infinite(dCroot), !is.infinite(dcleaf)) %>%
@@ -1358,7 +1337,7 @@ supernice_gdf<-gdf %>%
 
 
 # Lables for Histogram  
-Labels <- supernice_gdf%>%
+Labels <- supernice_gdf %>%
   ungroup()%>%
   mutate(l_larger_than_one = l_croot_cleaf>1) %>%
   summarise(number_of_records=n(),
@@ -1442,13 +1421,13 @@ ggsave(here("fig/dcleaf_dcroot_trendy_s1_bymodl.pdf"), width = 9, height = 10)
 
 
 # we need to get some stat for the overall excel table
-Quantile_result <- nice_gdf%>%
+Quantile_result <- nice_gdf %>%
   group_by(modl) %>%
   summarise(l_croot_cleaf_50 = quantile(l_croot_cleaf,probs=0.5)) 
 summary_table <- left_join(summary_table,Quantile_result,by='modl')
 #openxlsx::write.xlsx(summary_table,file = here("fig/TRENDYV11_summarytable.xlsx"))
 # Lables for Histogram  
-Labels <- nice_gdf%>%
+Labels <- nice_gdf %>%
   mutate(l_larger_than_one = l_croot_cleaf>1) %>%
   group_by(modl) %>%
   summarise(number_of_records=n(),

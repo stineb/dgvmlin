@@ -121,8 +121,9 @@ modls <- filnams |>
   
   pull(modl)
 
-datadir <- "~/data/trendy/v8/"  # on beni laptop
+# datadir <- "~/data/trendy/v8/"  # on beni laptop
 # datadir <- "/data_1/trendy/v8"  # on GECO server
+datadir <- here::here("data/")
 
 df <- filnams |> 
   
@@ -179,8 +180,8 @@ df <- filnams |>
 
 Execute function using CDO.
 ```{r eval=FALSE}
-# xxx test
-df <- df[1,]
+# # xxx test
+# df <- df[1,]
 
 ## convert NPP and GPP units (worked except for LPX and DLEM)
 out <- purrr::map(as.list(df |> pull(cmd_npp_units)), ~system(., intern = TRUE))
@@ -207,8 +208,7 @@ source(here("R/collect_gdf_bymodl.R"))
 
 gdf <- purrr::map(
 
-  # seq(nrow(df)),
-  1,  # test
+  seq(nrow(df)),
 
   ~collect_gdf_bymodl(
 
@@ -245,6 +245,135 @@ gdf <- gdf |>
 ```
 
 ## Plots
+
+### NPP vs GPP
+
+#### Pooled 
+
+```{r}
+# sample for even representation, number determined by model with smallest 
+# number of gridcells
+nsample <- gdf |> 
+  mutate(len = purrr::map_int(data, ~nrow(.))) |> 
+  pull(len) |> 
+  min()
+
+# all models pooled
+gg1 <- gdf |>
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) |>
+  unnest(data) |>
+  dplyr::filter(!is.nan(dnpp), !is.nan(dnpp), !is.infinite(dnpp), !is.infinite(dnpp)) |>
+  ggplot(aes(x = dgpp, y = dnpp)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, "GPP/GPP")),
+    y = expression(paste(Delta, "NPP/NPP"))
+  )
+
+gg2 <- gdf |>
+  mutate(data = purrr::map(data, ~slice_sample(., n = nsample))) |>
+  unnest(data) |> 
+  ggplot(aes(x = l_gpp_npp, y = ..density..)) +
+  geom_density(fill = "grey70") +
+  theme_classic() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) + 
+  labs(
+    x = expression(paste(italic(L)[NPP/GPP]))
+  )
+
+cowplot::plot_grid(
+  gg1, 
+  gg2,
+  ncol = 2
+)
+
+ggsave(here("fig/gpp_npp_trendy.pdf"), width = 8, height = 4)
+```
+
+#### Heat map - by model
+
+```{r}
+gdf |>
+  unnest(data) |>
+  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg)) |>
+  ggplot(aes(x = dnpp, y = dcveg)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, "NPP/NPP")),
+    y = expression(paste(Delta, italic(C)[veg], "/", italic(C)[veg]))
+  ) +
+  facet_wrap(. ~ modl, nrow = 3,  scales = "free") +
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, hjust = 0)
+    )
+
+ggsave(here("fig/cveg_npp_trendy_bymodel.pdf"), width = 4, height = 4)
+```
+
+#### Map - by model
+
+```{r}
+tmp <- gdf |>
+  unnest(data) |>
+  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg), !is.infinite(dnpp), !is.infinite(dcveg))
+
+coast <- rnaturalearth::ne_coastline(
+  scale = 110, 
+  returnclass = "sf"
+  )
+
+map_bymodl <- function(df, modl, coast){
+  
+  ggplot() +
+	  geom_raster(
+	    data = df |> 
+	      dplyr::filter(modl == modl),
+	    aes(x = lon, y = lat, fill = l_npp_cveg),
+	    show.legend = TRUE
+	    ) +
+    geom_sf(
+      data = coast,
+      colour = 'black',
+      linewidth = 0.3
+    )  +
+    coord_sf(
+      ylim = c(-60, 85),
+      expand = FALSE
+    ) +
+    khroma::scale_fill_berlin(
+      name = "",
+      limits = c(0,2), 
+      midpoint = 1, 
+      reverse = TRUE
+      ) +
+    theme_void() +
+    labs(
+      title = modl
+    )
+}
+
+map_bymodl(tmp, "CABLE", coast)
+```
+
 
 ### Cveg vs NPP
 
