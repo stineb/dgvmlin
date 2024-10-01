@@ -394,10 +394,10 @@ gdf <- gdf %>%
 
 #save(gdf,file=here("data/gdf_Trendyv11_202407.rda"))
 
-summary_table <- as.data.frame(c('ALL','CLASSIC',
+summary_table <- as.data.frame(c('ALL',"C only models" ,"CN coupled models",'CLASSIC',
 'IBIS',
 'LPJ',
-'ORCHIDEEv3',
+'ORCHIDEE',
 'VISIT',
 'ISBA-CTRIP',
 'CABLE-POP',
@@ -412,7 +412,7 @@ summary_table <- as.data.frame(c('ALL','CLASSIC',
 'SDGVM'
 ))
 colnames(summary_table) <- c('modl')
-summary_table$CN_coupled<-c(NA,'No',
+summary_table$CN_coupled<-c(NA,NA,NA,'No',
 'No',
 'No',
 'Yes',
@@ -586,8 +586,29 @@ ggsave(here("fig/dnpp_dvegc_trendy_s1_bymodl.pdf"), width = 9, height = 13)
 
 # we need to get some stat for the overall excel table
 Quantile_result <- nice_gdf%>%
+  bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
+      unnest(data) %>%
+      filter(modl %in% c('CLASSIC','IBIS','LPJ', "VISIT" ,  "VISIT-NIES", "ISBA-CTRIP"))%>%
+      mutate(modl = "C only models")
+  ) %>%
+  bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
+      unnest(data) %>%
+      filter(!modl %in% c('CLASSIC','IBIS','LPJ', "VISIT" ,  "VISIT-NIES", "ISBA-CTRIP"))%>%
+      mutate(modl = "CN coupled models")
+  ) %>%
+  dplyr::filter(!is.nan(dnpp), !is.nan(dcveg_star), !is.infinite(dnpp), !is.infinite(dcveg_star)) %>% 
+  filter(l_cveg_star_npp<100000, l_cveg_star_npp>-1000000)%>%
   group_by(modl) %>%
   summarise(l_cveg_star_npp_50 = quantile(l_cveg_star_npp,probs=0.5)) 
+
 summary_table <- left_join(summary_table,Quantile_result,by='modl')
 
 # Lables for Histogram  
@@ -918,6 +939,27 @@ ggsave(here("fig/dnpp_dgpp_trendy_s1_bymodl.pdf"), width = 9, height = 13)
 
 # we need to get some stat for the overall excel table
 Quantile_result <- nice_gdf%>%
+    bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
+      unnest(data) %>%
+      filter(modl %in% c('CLASSIC','IBIS','LPJ', "VISIT" ,  "VISIT-NIES", "ISBA-CTRIP"))%>%
+      mutate(modl = "C only models")
+  ) %>%
+  bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
+      unnest(data) %>%
+      filter(!modl %in% c('CLASSIC','IBIS','LPJ', "VISIT" ,  "VISIT-NIES", "ISBA-CTRIP"))%>%
+      mutate(modl = "CN coupled models")
+  ) %>%
+   dplyr::filter(dnpp < 2.5 & dnpp > -1.5 & dgpp < 2.5 & dgpp > -1.5) %>%
+  dplyr::filter(!is.nan(dnpp), !is.nan(dgpp), !is.infinite(dnpp), !is.infinite(dgpp)) %>% 
+  filter(l_npp_gpp<100000, l_npp_gpp>-1000000)%>%
   group_by(modl) %>%
   summarise(l_npp_gpp_50 = quantile(l_npp_gpp,probs=0.5)) 
 summary_table <- left_join(summary_table,Quantile_result,by='modl')
@@ -1180,10 +1222,30 @@ ggsave(here("fig/dcveg_dcroot_trendy_s1_bymodl.pdf"), width = 9, height = 10)
 ## histograms by model
 
 
+
+
 # we need to get some stat for the overall excel table
 Quantile_result <- nice_gdf%>%
+    bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
+      unnest(data) %>%
+      filter(modl %in% c('CLASSIC','IBIS','LPJ', "VISIT" ,  "VISIT-NIES", "ISBA-CTRIP"))%>%
+      mutate(modl = "C only models")
+  ) %>%
+  bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample,replace=T))) %>% # smallest set here
+      unnest(data) %>%
+      filter(!modl %in% c('CLASSIC','IBIS','LPJ', "VISIT" ,  "VISIT-NIES", "ISBA-CTRIP"))%>%
+      mutate(modl = "CN coupled models")
+  ) %>%
   group_by(modl) %>%
-  summarise(l_croot_cveg_50 = quantile(l_croot_cveg,probs=0.5)) 
+  summarise(l_croot_cveg_50 = quantile(l_croot_cveg,probs=0.5,na.rm=T)) 
 summary_table <- left_join(summary_table,Quantile_result,by='modl')
 openxlsx::write.xlsx(summary_table,file = here("fig/TRENDYV11_summarytable.xlsx"))
 # Lables for Histogram  
