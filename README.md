@@ -1,12 +1,12 @@
-# Read this to understand this repo
+# dgvmlin
 
 **Huanyuan Zhang-Zheng 2024/06/19**
 
-This repo is prepared for linearity diagnose project. This is for TRENDY v11 only. Old Trendy simulations are ![here](https://github.com/Hzhang-ouce/DGVM_density_plot)
+This repo contains code for the analysis, diagnosing linearity of the C cycle dynamics from TRENDY v11 model outputs. Analysis code for analyses with TRENDY v8 are ![here](https://github.com/Hzhang-ouce/DGVM_density_plot)
 
 ## Important note for reproducing figures
 
-If you just want to reproduce figures, please don't read the nc files again. We have created `gdf_Trendyv11_202406.rda` which is a variable immediately ready for figures making. Just load this one into R, then go to **Plot relationships** chapter of `DGVMLIN_trendy_v11.rmd`
+If you just want to reproduce figures, please don't read the nc files again. We have created `gdf_Trendyv11_202406.rda` which is a variable immediately ready for figures making. Just load this one into R, then go to **Plot relationships** chapter of `vignettes/DGVMLIN_trendy_v11.rmd`
 
 ## Important note for future development
 

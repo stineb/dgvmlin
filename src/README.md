@@ -8,4 +8,3 @@ They will become:
 (2) FINAL_Mean.nc as an average of the last 10 years
 (3) _CHANGE.nc as annnual change of this variable in the last 10 years.
 
-
