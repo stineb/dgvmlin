@@ -607,7 +607,7 @@ gg_densityscatter <- gdf_sampled %>%
 
 # Number for text
 print("Quartiles of L_NPP:GPP")
-print(format(quantile(gdf_sampled$l_npp_gpp, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 2))
+print(format(quantile(gdf_sampled$l_npp_gpp, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 3))
 
 # Lables for Histogram  
 labels <- gdf_sampled %>%
@@ -742,7 +742,7 @@ gdf_long <- gdf %>%
   unnest(data) %>%
   dplyr::filter(!is.nan(l_npp_gpp), !is.infinite(l_npp_gpp))
 
-bymodel_map <- ggplot() +
+ggplot() +
   geom_raster(
     data = gdf_long,
     aes(x = lon, y = lat, fill = l_npp_gpp),
@@ -766,8 +766,13 @@ bymodel_map <- ggplot() +
   facet_wrap(. ~ modl, ncol = 3)
 
 ggsave(
-  bymodel_map, 
-  filename = here("fig/Spatial_MAP_dnpp_dgpp_trendyv11_bymodel.pdf"),
+  filename = here("fig/map_dgpp_dnpp_bymodel.pdf"),
+  height = 10, 
+  width = 10
+  )
+
+ggsave(
+  filename = here("fig/map_dgpp_dnpp_bymodel.png"),
   height = 10, 
   width = 10
   )
@@ -855,7 +860,7 @@ gg_densityscatter <- gdf_sampled %>%
 
 # Number for text
 print("Quartiles of L_Cveg:NPP")
-print(format(quantile(gdf_sampled$l_cveg_star_npp, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 2))
+print(format(quantile(gdf_sampled$l_cveg_star_npp, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 3))
 
 # Lables for Histogram  
 labels <- gdf_sampled %>%
@@ -988,7 +993,7 @@ gdf_long <- gdf %>%
   unnest(data) %>%
   dplyr::filter(!is.nan(l_cveg_star_npp), !is.infinite(l_cveg_star_npp))
 
-bymodel_map <- ggplot() +
+ggplot() +
   geom_raster(
     data = gdf_long,
     aes(x = lon, y = lat, fill = l_cveg_star_npp),
@@ -1013,8 +1018,13 @@ bymodel_map <- ggplot() +
   facet_wrap(. ~ modl, ncol = 3)
 
 ggsave(
-  bymodel_map, 
   filename = here("fig/map_dcveg_dnpp_bymodel.pdf"),
+  height = 10, 
+  width = 10
+  )
+
+ggsave(
+  filename = here("fig/map_dcveg_dnpp_bymodel.png"),
   height = 10, 
   width = 10
   )
@@ -1104,7 +1114,7 @@ gg_densityscatter <- gdf_sampled %>%
 
 # Number for text
 print("Quartiles of L_Croot:Cveg")
-print(format(quantile(gdf_sampled$l_croot_cveg, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 2))
+print(format(quantile(gdf_sampled$l_croot_cveg, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 3))
 
 # Lables for Histogram  
 labels <- gdf_sampled %>%
@@ -1237,7 +1247,7 @@ gdf_long <- gdf %>%
   unnest(data) %>%
   dplyr::filter(!is.nan(l_croot_cveg), !is.infinite(l_croot_cveg))
 
-bymodel_map <- ggplot() +
+ggplot() +
   geom_raster(
     data = gdf_long,
     aes(x = lon, y = lat, fill = l_croot_cveg),
@@ -1262,14 +1272,12 @@ bymodel_map <- ggplot() +
   facet_wrap(. ~ modl, ncol = 3)
 
 ggsave(
-  bymodel_map, 
   filename = here("fig/map_dcroot_dcveg_bymodel.pdf"),
   height = 10, 
   width = 10
   )
 
 ggsave(
-  bymodel_map, 
   filename = here("fig/map_dcroot_dcveg_bymodel.png"),
   height = 10, 
   width = 10
@@ -1361,7 +1369,7 @@ gg_densityscatter <- gdf_sampled %>%
 
 # Number for text
 print("Quartiles of L_Croot:Cveg*")
-print(format(quantile(gdf_sampled$l_croot_cveg_star, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 2))
+print(format(quantile(gdf_sampled$l_croot_cveg_star, probs =  c(0.25, 0.5, 0.75), na.rm = TRUE), digits = 3))
 
 # Lables for Histogram  
 labels <- gdf_sampled %>%
@@ -1494,7 +1502,7 @@ gdf_long <- gdf %>%
   unnest(data) %>%
   dplyr::filter(!is.nan(l_croot_cveg_star), !is.infinite(l_croot_cveg_star))
 
-bymodel_map <- ggplot() +
+ggplot() +
   geom_raster(
     data = gdf_long,
     aes(x = lon, y = lat, fill = l_croot_cveg_star),
@@ -1519,14 +1527,12 @@ bymodel_map <- ggplot() +
   facet_wrap(. ~ modl, ncol = 3)
 
 ggsave(
-  bymodel_map, 
   filename = here("fig/map_dcroot_dcveg_star_bymodel.pdf"),
   height = 10, 
   width = 10
   )
 
 ggsave(
-  bymodel_map, 
   filename = here("fig/map_dcroot_dcveg_star_bymodel.png"),
   height = 10, 
   width = 10
@@ -1583,161 +1589,7 @@ ggsave(filename = here("fig/combined_croot_cveg_star.pdf"), height = 5, width = 
 ``` 
 ## Summary table
 
-```{r}
-df <- summary_table |> 
-  filter(modl != "ALL")
-
-# Pivot to long format
-column_order <- c("l_npp_gpp_50", "l_cveg_star_npp_50", "l_croot_cveg_50")
-
-column_labels <- c(
-  expression(paste(italic(L)[NPP:GPP])),
-  expression(paste(italic(L)[Cveg^"*":NPP])),
-  expression(paste(italic(L)[Croot:Cveg]))
-  )
-
-# By model
-df_long <- df[, c(1, 3, 4, 5)] %>%
-  pivot_longer(-modl, names_to = "link", values_to = "value") |> 
-  mutate(link = factor(link, levels = column_order))
-
-gg1 <- ggplot(df_long, aes(x = link, y = modl, fill = value)) +
-  geom_tile(color = "white", show.legend = FALSE) +
-  geom_text(aes(label = round(value, 2)), color = "grey30") +
-  khroma::scale_fill_vik(
-    name = "",
-    limits = c(0.2, 1.8),  
-    midpoint = 1,
-    reverse = TRUE,
-    na.value = "grey70"
-    ) +
-  scale_x_discrete(labels = column_labels, position = "top") +
-  scale_y_discrete(limits = rev(unique(df$modl))) +
-  coord_fixed(ratio = 0.5) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_text(angle = 0, hjust = 0.5),
-    panel.grid = element_blank(),
-    legend.position = "bottom"
-  ) +
-  labs(
-    fill = "Value",
-    y = "",
-    x = ""
-    )
-
-# By C-N vs. C-only models
-cn_id <- tibble(
-  cn_coupled = c(TRUE, FALSE),
-  cn_label = c("    C-N", "    C-only")
-)
-
-df_long <- df %>%
-  group_by(cn_coupled) |> 
-  summarise(across(all_of(c("l_npp_gpp_50", "l_cveg_star_npp_50", "l_croot_cveg_50")), ~ mean(.x, na.rm = TRUE))) |> 
-  pivot_longer(-cn_coupled, names_to = "link", values_to = "value") |> 
-  mutate(link = factor(link, levels = column_order)) |> 
-  left_join(
-    cn_id,
-    by = "cn_coupled"
-  )
-
-gg2 <- ggplot(df_long, aes(x = link, y = cn_label, fill = value)) +
-  geom_tile(color = "white", show.legend = FALSE) +
-  geom_text(aes(label = round(value, 2)), color = "grey30") +
-  khroma::scale_fill_vik(
-    name = "",
-    limits = c(0.2, 1.8),  
-    midpoint = 1,
-    reverse = TRUE,
-    na.value = "grey70"
-    ) +
-  scale_x_discrete(labels = column_labels, position = "top") +
-  coord_fixed(ratio = 0.5) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_blank(),
-    panel.grid = element_blank(),
-    legend.position = "bottom"
-  ) +
-  labs(
-    fill = "Value",
-    y = "",
-    x = ""
-    )
-
-# aggregated across all models
-df_long <- df %>%
-  summarise(across(all_of(c("l_npp_gpp_50", "l_cveg_star_npp_50", "l_croot_cveg_50")), ~ mean(.x, na.rm = TRUE))) |> 
-  pivot_longer(cols = everything(), names_to = "link", values_to = "value") |> 
-  mutate(link = factor(link, levels = column_order)) |> 
-  mutate(label = "     ALL")
-
-gg3 <- ggplot(df_long, aes(x = link, y = label, fill = value)) +
-  geom_tile(color = "white", show.legend = FALSE) +
-  geom_text(aes(label = round(value, 2)), color = "grey30") +
-  khroma::scale_fill_vik(
-    name = "",
-    limits = c(0.2, 1.8),  
-    midpoint = 1,
-    reverse = TRUE,
-    na.value = "grey70"
-    ) +
-  scale_x_discrete(labels = column_labels, position = "top") +
-  coord_fixed(ratio = 0.5) +
-  theme_minimal() +
-  theme(
-    axis.text.x = element_blank(),
-    panel.grid = element_blank(),
-    legend.position = "bottom"
-  ) +
-  labs(
-    fill = "Value",
-    y = "",
-    x = ""
-    )
-
-# get legend
-# Dummy plot just to extract the legend
-legend_plot <- ggplot(df_long, aes(x = link, y = label, fill = value)) +
-  geom_tile() +
-  khroma::scale_fill_vik(
-    name = "",
-    limits = c(0.2, 1.8),  
-    midpoint = 1,
-    reverse = TRUE,
-    na.value = "grey70"
-    ) +
-  theme(legend.position = "bottom")
-
-# Extract legend object
-legend <- cowplot::get_legend(legend_plot)
-
-heatmaps <- cowplot::plot_grid(
-  gg1,
-  gg2, 
-  gg3,
-  ncol = 1,
-  rel_heights = c(1, 0.2, 0.15)
-)
-
-final_plot <- cowplot::plot_grid(
-  heatmaps,
-  legend,
-  ncol = 1,
-  align = "v",    # vertical alignment
-  axis = "lr",    # align left and right margins (y-axis)
-  rel_heights = c(1, 0.1)  # adjust legend height as needed
-)
-
-# Display
-final_plot
-
-ggsave(here("fig/summary_table.pdf"), width = 5, height = 9)
-```
-
-
-```{r}
+```{r summary_table, fig.height=9, out.width="80%"}
 df <- summary_table |> 
   filter(modl != "ALL")
 
