@@ -19,6 +19,13 @@ source(here("R/collect_gdf_bymodl_HZ_Trendyv11.R"))
 source(here("R/nc_to_df.R"))
 source(here("R/read_nc_onefile.R"))
 
+# # create script from this vignette
+# knitr::purl(
+#   here("vignettes/DGVMLIN_trendy_v11.rmd"), 
+#   output = here("analysis/dgmvlin.R"), 
+#   documentation = 1
+#   )
+
 #setwd("~/E/RA/DGVM_density_plot/trendy_v9") #h
 #setwd('F:/Oxford/Chapter_four/dgvmlin')
 # If you only want to draw figures, only do this: load(here("data/gdf_Trendyv11_202406.rda")) 
@@ -613,9 +620,11 @@ print(format(quantile(gdf_sampled$l_npp_gpp, probs =  c(0.25, 0.5, 0.75), na.rm 
 labels <- gdf_sampled %>%
   ungroup()%>%
   mutate(l_larger = l_npp_gpp > 1) %>%
-  summarise(n_recs = n(),
-            perc_larger = round(sum(l_larger)/n_recs, digits = 2),
-            perc_smaller = 1 - perc_larger)
+  summarise(
+    n_recs = n(),
+    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs, digits = 2),
+    perc_smaller = 1 - perc_larger
+    )
 
 # Density plot
 gg_density <- gdf_sampled %>% 
@@ -629,11 +638,13 @@ gg_density <- gdf_sampled %>%
   geom_text(
     data = labels,
     aes(x = 0.5, y = Inf, label = perc_smaller),
-    vjust= 1.5) +
+    vjust = 1.5
+    ) +
   geom_text(
     data = labels,
     aes(x = 1.5, y = Inf, label = perc_larger),
-    vjust= 1.5) +
+    vjust = 1.5
+    ) +
   labs(
     x = expression(paste(italic(L)[NPP:GPP]))
   )
@@ -707,11 +718,13 @@ summary_table <- left_join(summary_table, df_quantiles, by = 'modl')
 
 # Lables for Histogram  
 labels <- gdf_sampled %>%
-  mutate(l_larger = l_npp_gpp>1) %>%
+  mutate(l_larger = l_npp_gpp > 1) %>%
   group_by(modl) %>%
-  summarise(n_recs=n(),
-            perc_larger = round(sum(l_larger)/n_recs,digits =2),
-            perc_smaller = 1 - perc_larger)
+  summarise(
+    n_recs = n(),
+    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs,digits = 2),
+    perc_smaller = 1 - perc_larger
+    )
 
 # Histograms per model
 gdf_sampled %>%
@@ -738,12 +751,12 @@ ggsave(here("fig/hist_dnpp_dgpp_trendy_bymodl.png"), width = 9, height = 10.5)
 
 By model.
 ```{r gpp_npp_bymodl_map, fig.height=12, out.width="100%"}
-plot_by_model <- function(modl, df){
+plot_by_model <- function(use_modl, df){
   
   gdf_long <- df %>%
     unnest(data) %>%
     dplyr::filter(!is.nan(l_npp_gpp), !is.infinite(l_npp_gpp)) |> 
-    filter(modl == !!modl)
+    filter(modl == use_modl)
   
   ggplot() +
     geom_tile(
@@ -766,12 +779,15 @@ plot_by_model <- function(modl, df){
       oob = scales::squish,
       midpoint = 1,
       reverse = TRUE
-      ) +
-    theme_void() +
-    theme(legend.position = "none") +  # suppress individual legends
+      ) +  # suppress individual legends
     labs(
-      title = modl
-    )
+      title = use_modl
+    ) +
+    theme_void() +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(hjust = 0.5, size = 10) 
+      )
 }
 
 plotlist <- purrr::map(
@@ -863,7 +879,7 @@ cowplot::plot_grid(
 ggsave(filename = here("fig/combined_npp_gpp.pdf"), height = 5, width = 6)
 ``` 
 
-### Cveg vs NPP 
+### Cveg* vs NPP 
 
 #### All models pooled
 
@@ -902,9 +918,11 @@ print(format(quantile(gdf_sampled$l_cveg_star_npp, probs =  c(0.25, 0.5, 0.75), 
 labels <- gdf_sampled %>%
   ungroup()%>%
   mutate(l_larger = l_cveg_star_npp > 1) %>%
-  summarise(n_recs = n(),
-            perc_larger = round(sum(l_larger)/n_recs, digits = 2),
-            perc_smaller = 1 - perc_larger)
+  summarise(
+    n_recs = n(),
+    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs, digits = 2),
+    perc_smaller = 1 - perc_larger
+    )
 
 # Density plot
 gg_density <- gdf_sampled %>% 
@@ -918,11 +936,11 @@ gg_density <- gdf_sampled %>%
   geom_text(
     data = labels,
     aes(x = 0.5, y = Inf, label = perc_smaller),
-    vjust= 1.5) +
+    vjust = 1.5) +
   geom_text(
     data = labels,
     aes(x = 1.5, y = Inf, label = perc_larger),
-    vjust= 1.5) +
+    vjust = 1.5) +
   labs(
     x = expression(paste(italic(L)[Cveg^"*":NPP]))
   )
@@ -997,7 +1015,7 @@ labels <- gdf_sampled %>%
   group_by(modl) %>%
   summarise(
     n_recs = n(),
-    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs, digits = 2),
+    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs,digits = 2),
     perc_smaller = 1 - perc_larger
     )
 
@@ -1025,12 +1043,12 @@ ggsave(here("fig/hist_dcveg_dnpp_trendy_bymodl.png"), width = 9, height = 10.5)
 
 By model.
 ```{r cveg_npp_bymodl_map, fig.height=12, out.width="100%"}
-plot_by_model <- function(modl, df){
+plot_by_model <- function(use_modl, df){
   
   gdf_long <- df %>%
     unnest(data) %>%
     dplyr::filter(!is.nan(l_npp_gpp), !is.infinite(l_npp_gpp)) |> 
-    filter(modl == !!modl)
+    filter(modl == use_modl)
   
   ggplot() +
     geom_tile(
@@ -1048,17 +1066,20 @@ plot_by_model <- function(modl, df){
       expand = FALSE
     ) +
     khroma::scale_fill_vik(
-    name = expression(paste(italic(L)[Cveg^"*":NPP])),
+      name = expression(paste(italic(L)[Cveg^"*":NPP])),
       limits = c(0, 2), 
       oob = scales::squish,
       midpoint = 1,
       reverse = TRUE
       ) +
-    theme_void() +
-    theme(legend.position = "none") +  # suppress individual legends
     labs(
-      title = modl
-    )
+      title = use_modl
+    ) +
+    theme_void() +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(hjust = 0.5, size = 10) 
+      )
 }
 
 plotlist <- purrr::map(
@@ -1191,9 +1212,11 @@ print(format(quantile(gdf_sampled$l_croot_cveg, probs =  c(0.25, 0.5, 0.75), na.
 labels <- gdf_sampled %>%
   ungroup()%>%
   mutate(l_larger = l_croot_cveg > 1) %>%
-  summarise(n_recs = n(),
-            perc_larger = round(sum(l_larger)/n_recs, digits = 2),
-            perc_smaller = 1 - perc_larger)
+  summarise(
+    n_recs = n(),
+    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs,digits = 2),
+    perc_smaller = 1 - perc_larger
+    )
 
 # Density plot
 gg_density <- gdf_sampled %>% 
@@ -1341,11 +1364,14 @@ plot_by_model <- function(use_modl, df){
       midpoint = 1,
       reverse = TRUE
       ) +
-    theme_void() +
-    theme(legend.position = "none") +  # suppress individual legends
     labs(
       title = use_modl
-    )
+    ) +
+    theme_void() +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(hjust = 0.5, size = 10) 
+      )
 }
 
 plotlist <- purrr::map(
@@ -1480,9 +1506,11 @@ print(format(quantile(gdf_sampled$l_croot_cveg_star, probs =  c(0.25, 0.5, 0.75)
 labels <- gdf_sampled %>%
   ungroup()%>%
   mutate(l_larger = l_croot_cveg_star > 1) %>%
-  summarise(n_recs = n(),
-            perc_larger = round(sum(l_larger)/n_recs, digits = 2),
-            perc_smaller = 1 - perc_larger)
+  summarise(
+    n_recs = n(),
+    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs, digits = 2),
+    perc_smaller = 1 - perc_larger
+    )
 
 # Density plot
 gg_density <- gdf_sampled %>% 
@@ -1601,12 +1629,12 @@ ggsave(here("fig/hist_dcroot_dcveg_star_bymodl.png"), width = 9, height = 10.5)
 
 By model.
 ```{r cveg_star_croot_bymodl_maps, fig.height=9, out.width="100%"}
-plot_by_model <- function(modl, df){
+plot_by_model <- function(use_modl, df){
   
   gdf_long <- df %>%
     unnest(data) %>%
     dplyr::filter(!is.nan(l_npp_gpp), !is.infinite(l_npp_gpp)) |> 
-    filter(modl == !!modl)
+    filter(modl == use_modl)
   
   ggplot() +
     geom_tile(
@@ -1630,11 +1658,14 @@ plot_by_model <- function(modl, df){
       midpoint = 1,
       reverse = TRUE
       ) +
-    theme_void() +
-    theme(legend.position = "none") +  # suppress individual legends
     labs(
-      title = modl
-    )
+      title = use_modl
+    ) +
+    theme_void() +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(hjust = 0.5, size = 10) 
+      )
 }
 
 plotlist <- purrr::map(
