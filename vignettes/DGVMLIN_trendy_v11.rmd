@@ -2128,7 +2128,7 @@ ggsave(bymodel_map,filename = here("fig/rootshootration_trendyv11_bymodelv2.png"
 
 
 
-## Summary table
+## Summary table (main text Figure 2)
 
 ```{r summary_table, fig.height=9, out.width="80%"}
 df <- summary_table |> 
@@ -2490,7 +2490,7 @@ ggsave(filename = here("fig/combined_cveg_NPP_nolower5.pdf"), height = 5, width 
 
 ```
 
-## supplementary table
+## Supplementary Data for submission  
 
 ```{r supplementary_table, fig.height=9, out.width="80%"}
 supplementary <- as.data.frame(c('ALL',"C only models" ,"CN coupled models","Veg Demo","not Veg Demo",'CLASSIC',
@@ -2722,6 +2722,6 @@ Quantile_table <- supplementary %>%
   left_join(Quantile_l_cveg_star_npp, by = "modl") %>%
   left_join(Quantile_l_cleaf_cveg, by = "modl")
 
-openxlsx::write.xlsx(Quantile_table,file = here("fig/supplementary_data.xlsx"), sheet=1)
+write.csv(Quantile_table,file = here("data/supplementary_data.csv"))
 
 ```
