@@ -907,7 +907,7 @@ gg_densityscatter <- gdf_sampled %>%
   ylim(-1, 2) +
   labs(
     x = expression(paste(Delta, "NPP/NPP")),
-    y = expression(paste(Delta, italic(C)[veg^"*"], ":", italic(C)[veg]))
+    y = expression(paste(Delta, italic(C)[veg^"*"], "/", italic(C)[veg]))
   )
 
 # Number for text
@@ -1754,6 +1754,7 @@ cowplot::plot_grid(
 
 ggsave(filename = here("fig/combined_croot_cveg_star.pdf"), height = 5, width = 6)
 ``` 
+
 ## Summary table
 
 ```{r summary_table, fig.height=9, out.width="80%"}
