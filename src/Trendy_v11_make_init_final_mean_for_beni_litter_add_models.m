@@ -20,12 +20,14 @@ close all
 
 %These models are selected because they have all variables available
 Model_list={'CABLE-POP';'CLASSIC';'CLM5.0';'DLEM';'ISAM';'IBIS';'LPX-Bern';'VISIT';'SDGVM';'ISBA-CTRIP';'JSBACH';'JULES';'LPJ';'LPJ-GUESS';'VISIT-NIES';'ORCHIDEE'};
+Model_list={'CABLE-POP';'CLASSIC';'CLM5.0';'ISAM';'IBIS';'LPX-Bern';'ISBA-CTRIP';'JULES';'LPJ-GUESS';'VISIT-NIES';'ORCHIDEE'};
 
 %Model_list={'LPJ-GUESS'};%In case you want one model only
 Variable_list={'gpp','npp'};
 Variable_list={'cVeg'};
 Variable_list={'rh','cSoil','cVeg','gpp','npp','cLitter','cWood','cLeaf','cRoot'};
 Variable_list={'cLeaf'};
+Variable_list={'cWood'};
 
 % VISIT don't have npp, we made it from gpp-ra
 % SDGVM land cover frac is too large to be read, I do it by cdo
@@ -38,7 +40,7 @@ Variable_list={'cLeaf'};
 
 %% read maps
 
-cd H:\Trendy_v11_data_temporary
+cd C:\Users\OxfordIT2\Downloads
 diary on
 % All the nc files downloaded from CMIP5 database stored here
 % To download input file, go to https://esgf-index1.ceda.ac.uk/search/cmip5-ceda/

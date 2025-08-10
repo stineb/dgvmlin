@@ -483,7 +483,7 @@ gdf <- gdf %>%
 
 Regrid all models' outputs to a common 1x1 deg grid. Note: this takes quite long, therefore reading from file if available.
 ```{r compile gdf}
-filnam <- here("data/gdf.rds")
+filnam <- here("data/gdfv2.rds")
 
 if (!file.exists(filnam)){
   
@@ -606,6 +606,8 @@ coast <- rnaturalearth::ne_coastline(
   scale = 110, 
   returnclass = "sf"
   )
+
+set.seed(1982)
 ```
 
 
@@ -2048,6 +2050,172 @@ gg_map_agg <- ggplot() +
   theme_void()
 ```
 
+### Cwood vs Cveg
+
+#### By model
+
+```{r cveg_star_cwood_bymodl, fig.height=9, out.width="100%"}
+set.seed(1982)
+
+gdf_sampled <- gdf %>%
+  unnest(data) %>%
+  bind_rows(
+    .,
+    gdf %>%
+      mutate(n = purrr::map_int(data, ~nrow(.))) %>%
+      mutate(data = purrr::map(data, ~slice_sample(., n = nsample, replace = TRUE))) %>% # smallest set here
+      unnest(data) %>%
+      mutate(modl = "ALL")
+  ) %>%
+  dplyr::filter(!is.nan(dcwood), !is.nan(dcveg), !is.infinite(dcwood), !is.infinite(dcveg))%>%
+  mutate(l_cwood_cveg=dcwood/dcveg)
+
+# density scatter
+gdf_sampled %>%
+  ggplot(aes(x = dcveg, y = dcwood)) +
+  geom_hex(bins = 50, show.legend = FALSE) +
+  theme_classic() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  # geom_vline(xintercept = 0, linetype = "dotted") +
+  khroma::scale_fill_batlowW(trans = "log", reverse = TRUE) +
+  xlim(-1, 2) + 
+  ylim(-1, 2) +
+  labs(
+    x = expression(paste(Delta, italic(C)[veg], "/", italic(C)[veg])),
+    y = expression(paste(Delta, italic(C)[wood], "/", italic(C)[wood]))
+  ) +
+  facet_wrap(. ~ modl,  ncol = 3,  scales = "free") +
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 12, hjust = 0)
+    )
+
+ggsave(here("fig/dCwood_dcveg_bymodl.pdf"), width = 9, height = 8)
+ggsave(here("fig/dCwood_dcveg_bymodl.png"), width = 9, height = 8)
+
+# we need to get some stat for the overall excel table
+df_quantiles <- gdf_sampled %>%
+  group_by(modl) %>%
+  summarise(l_cwood_cveg_50 = quantile(l_cwood_cveg, probs = 0.5, na.rm = TRUE)) 
+
+summary_table <- left_join(summary_table, df_quantiles, by = 'modl')
+
+# Lables for Histogram  
+labels <- gdf_sampled %>%
+  mutate(l_larger = l_cwood_cveg > 1) %>%
+  group_by(modl) %>%
+  summarise(
+    n_recs = n(),
+    perc_larger = round(sum(l_larger, na.rm = TRUE)/n_recs, digits = 2),
+    perc_smaller = 1 - perc_larger
+    )
+
+# Histograms per model
+gdf_sampled %>%
+  ggplot() +
+  geom_density(aes(x = l_cwood_cveg, y = ..density..), fill = "grey70") +
+  theme_classic() +
+  geom_hline(yintercept = 0, linetype = "dotted") +
+  # geom_vline(xintercept = 0, linetype = "dotted") +
+  geom_vline(xintercept = 1, linetype = "dotted") +
+  xlim(-1, 2.5) +
+  geom_text(data = labels, aes(x = 0.5, y = Inf, label = perc_smaller), vjust =  1.5) +
+  geom_text(data = labels, aes(x = 1.5, y = Inf, label = perc_larger), vjust = 1.5)+
+  labs(
+    x = expression(paste(italic(L)[Cwood:Cveg]))
+  ) +
+  facet_wrap(. ~ modl, ncol = 3,  scales = "free") 
+
+ggsave(here("fig/hist_dCwood_dcveg_bymodl.pdf"), width = 9, height = 10.5)
+ggsave(here("fig/hist_dCwood_dcveg_bymodl.png"), width = 9, height = 10.5)
+```
+
+#### Maps
+
+By model.
+```{r cveg_star_cwood_bymodl_maps, fig.height=9, out.width="100%"}
+
+gdf_mdlist<-gdf%>%
+    unnest(data) %>%
+dplyr::filter(dcwood>-100000)
+plot_by_model <- function(use_modl, df){
+  
+  gdf_long <- df %>%
+    unnest(data) %>%
+    mutate(l_cwood_cveg=dcwood/dcveg)%>%
+    dplyr::filter(!is.nan(l_cwood_cveg), !is.infinite(l_cwood_cveg)) |> 
+    filter(modl == use_modl)
+  
+  ggplot() +
+    geom_tile(
+      data = gdf_long,
+      aes(x = lon, y = lat, fill = l_cwood_cveg),
+      show.legend = TRUE
+      ) +
+    geom_sf(
+      data = coast,
+      colour = 'black',
+      linewidth = 0.3
+    )  +
+    coord_sf(
+      ylim = c(-60, 85),
+      expand = FALSE
+    ) +
+    khroma::scale_fill_vik(
+      name = expression(paste(italic(L)[Cwood:Cveg])),
+      limits = c(0, 2), 
+      oob = scales::squish,
+      midpoint = 1,
+      reverse = TRUE
+      ) +
+    labs(
+      title = use_modl
+    ) +
+    theme_void() +
+    theme(
+      legend.position = "none",
+      plot.title = element_text(hjust = 0.5, size = 10) 
+      )
+}
+
+plotlist <- purrr::map(
+  as.list(unique(gdf_mdlist$modl)),
+  ~ plot_by_model(., gdf)
+)
+
+legend_plot <- plotlist[[1]] +
+    theme(legend.position = "right")
+
+legend <- cowplot::get_legend(legend_plot)
+
+map_grid <- cowplot::plot_grid(
+  plotlist = plotlist,
+  ncol = 3
+)
+
+final_plot <- cowplot::plot_grid(
+  map_grid,
+  legend,
+  ncol = 2,
+  rel_widths = c(1, 0.08)  # adjust the legend width as needed
+)
+
+final_plot
+
+ggsave(
+  filename = here("fig/map_dCwood_dcveg_bymodel.pdf"),
+  height = 5, 
+  width = 10
+  )
+
+ggsave(
+  filename = here("fig/map_dcwood_dcveg_bymodel.png"),
+  height = 5, 
+  width = 10
+  )
+```
 ###  cRoot ratio
 
 #### Publication Fig. SXXX
@@ -2141,6 +2309,8 @@ column_labels <- c(
   expression(paste(italic(L)[NPP:GPP])),
   expression(paste(italic(L)[Cveg^"*":NPP])),
   expression(paste(italic(L)[Croot:Cveg])),
+#  expression(paste(italic(L)[Cleaf:Cveg^"*"])),
+#  expression(paste(italic(L)[Cwood:Cveg])),
   'CN coupled', 'Veg Demo'
   )
 
@@ -2357,8 +2527,100 @@ heatmaps <- cowplot::plot_grid(
 # # Display
 # final_plot
 
-ggsave(here("fig/summary_table.pdf"), width = 7, height = 9)
+ggsave(here("fig/summary_table.pdf"), width = 8, height = 9)
 ```
+
+##Summary table with cwood and croot
+```{r summary_table, fig.height=9, out.width="80%"}
+df <- summary_table |> 
+  filter(modl != "ALL")
+
+# Pivot to long format
+column_order <- c("l_npp_gpp_50", "l_cveg_star_npp_50", "l_croot_cveg_50", "l_cleaf_cveg_star_50", "l_cwood_cveg_50","cn_coupled","Veg_Demo")
+
+column_labels <- c(
+  expression(paste(italic(L)[NPP:GPP])),
+  expression(paste(italic(L)[Cveg^"*":NPP])),
+  expression(paste(italic(L)[Croot:Cveg])),
+  expression(paste(italic(L)[Cleaf:Cveg^"*"])),
+  expression(paste(italic(L)[Cwood:Cveg])),
+  'CN coupled', 'Veg Demo'
+  )
+
+# By model
+df_long <- df[, c(1, 4, 5,6,7,8)] %>%
+  pivot_longer(-modl, names_to = "link", values_to = "value") |> 
+  mutate(link = factor(link, levels = column_order))
+
+cn_id <- tibble(
+  cn_coupled = c('Yes', 'No'),
+  modl = c("C-N", "    C-only")
+)
+
+
+df_long2 <- df %>%
+  group_by(cn_coupled) |> 
+  summarise(across(all_of(c("l_npp_gpp_50", "l_cveg_star_npp_50", "l_croot_cveg_50", "l_cleaf_cveg_star_50", "l_cwood_cveg_50")), ~ median(.x, na.rm = TRUE))) |> 
+  pivot_longer(-cn_coupled, names_to = "link", values_to = "value") |> 
+  mutate(link = factor(link, levels = column_order)) |> 
+  left_join(
+    cn_id,
+    by = "cn_coupled"
+  )
+
+cn_id <- tibble(
+  Veg_Demo = c('Yes', 'No'),
+  modl = c("Veg demo", "non Veg demo")
+)
+
+df_long3 <- df %>%
+  group_by(Veg_Demo) |> 
+  summarise(across(all_of(c("l_npp_gpp_50", "l_cveg_star_npp_50", "l_croot_cveg_50", "l_cleaf_cveg_star_50", "l_cwood_cveg_50")), ~ median(.x, na.rm = TRUE))) |> 
+  pivot_longer(-Veg_Demo, names_to = "link", values_to = "value") |> 
+  mutate(link = factor(link, levels = column_order)) |> 
+  left_join(
+    cn_id,
+    by = "Veg_Demo"
+  )
+
+
+# aggregated across all models
+df_long4 <- df %>%
+    summarise(across(all_of(c("l_npp_gpp_50", "l_cveg_star_npp_50", "l_croot_cveg_50", "l_cleaf_cveg_star_50", "l_cwood_cveg_50")), ~ median(.x, na.rm = TRUE))) |> 
+  pivot_longer(cols = everything(), names_to = "link", values_to = "value") |> 
+  mutate(link = factor(link, levels = column_order)) |> 
+  mutate(modl = "     ALL")
+df_long_all<-bind_rows(df_long,df_long2,df_long3,df_long4)
+
+gg2 <- ggplot(df_long_all, aes(x = link, y = modl, fill = value)) +
+  geom_tile(color = "white", show.legend = FALSE) +
+  geom_text(aes(label = round(value, 2)), color = "grey30") +
+  khroma::scale_fill_vik(
+    name = expression(paste(italic(L))),
+    limits = c(0.2, 1.8),  
+    midpoint = 1,
+    reverse = TRUE,
+    na.value = "grey70"
+    ) +
+  scale_x_discrete(labels = column_labels, position = "top") +
+  scale_y_discrete(limits = rev(unique(df_long_all$modl))) +
+  coord_fixed(ratio = 0.5) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 0.5),
+    panel.grid = element_blank(),
+    legend.position = "bottom"
+  ) +
+  labs(
+    fill = "Value",
+    y = "",
+    x = ""
+    )
+ggsave(here("fig/summary_table_extended.pdf"), width = 8, height = 9)
+
+
+```
+
 
 ## remove <5% Cveg could solve LcVeg:NPP=0 issues
 
