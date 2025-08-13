@@ -1,14 +1,15 @@
-collect_gdf_bymodl <- function(modl,
-                               dir,
-                               filn_gpp_init, filn_gpp_final,
-                               filn_npp_init, filn_npp_final,
-                               filn_cVeg_init, filn_cVeg_final,
-                               filn_cRoot_init, filn_cRoot_final
-                               # filn_cLeaf_init, filn_cLeaf_final,
-                               # filn_cWood_init, filn_cWood_final
-                               # filn_cSoil_init, filn_cSoil_final,
-                               # filn_cSoil_change, filn_cVeg_change
-                               ){
+collect_gdf_bymodl <- function(
+    modl,
+    dir,
+    filn_gpp_init, filn_gpp_final,
+    filn_npp_init, filn_npp_final,
+    filn_cVeg_init, filn_cVeg_final,
+    filn_cRoot_init, filn_cRoot_final,
+    filn_cLeaf_init, filn_cLeaf_final,
+    filn_cWood_init, filn_cWood_final
+    # filn_cSoil_init, filn_cSoil_final,
+    # filn_cSoil_change, filn_cVeg_change
+){
 
   rlang::inform(paste("Collecting outputs for", modl))
 
