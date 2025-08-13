@@ -2311,8 +2311,6 @@ ggsave(bymodel_map,filename = here("fig/rootshootration_trendyv11_bymodelv2.png"
 
 ## Summary table
 
-### Median
-
 ```{r summary_table, fig.height=9, out.width="80%"}
 df <- summary_table |> 
   filter(modl != "ALL")
@@ -2540,11 +2538,11 @@ heatmaps <- cowplot::plot_grid(
   gg2, 
   gg2veg,
   gg3,
-  # legend,
+  legend,
   ncol = 1,
   align = "hv",    # vertical alignment
   axis = "lr",    # align left and right margins (y-axis)
-  rel_heights = c(1, 0.189, 0.189, 0.135), #, 0.15),
+  rel_heights = c(1, 0.189, 0.189, 0.135, 0.15),
   labels = letters[1:4]
 )
 
@@ -2553,9 +2551,7 @@ heatmaps
 ggsave(here("fig/summary_table.pdf"), width = 7, height = 9)
 ```
 
-
-
-
+## SI data table
 
 ```{r}
 gdf_sampled <- gdf %>%
